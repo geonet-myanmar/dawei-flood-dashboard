@@ -1,0 +1,13 @@
+# Raw MIMU downloads (~31 MB). Regenerable: python scripts/01_download_mimu.py
+data/raw/
+# Artifact fragment, a derived near-duplicate of index.html. Regenerable: python scripts/05_build_html.py
+dist/
+__pycache__/
+*.py[cod]
+.claude/
+_prev_*/
+*.log
+Thumbs.db
+desktop.ini
+# The original report as first saved; the committed copy is data/source/dawei_watch_2026-09-27.txt
+/dawei_flood.txt

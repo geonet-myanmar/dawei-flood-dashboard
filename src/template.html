@@ -1,0 +1,1557 @@
+<title>Dawei Floods and Landslides</title>
+<meta name="description" content="Interactive situation dashboard for the 26–27 September 2026 floods and landslides in Dawei District, Tanintharyi Region, Myanmar: Dawei Watch field reporting geocoded onto MIMU villages, roads, schools and health facilities." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+Myanmar:wght@400;500;600&display=swap" />
+
+<style>
+/*__LEAFLET_CSS__*/
+</style>
+
+<style>
+/* ================================================================ TOKENS */
+:root {
+  color-scheme: light;
+
+  /* neutrals: cool slate with a sea-green bias */
+  --plane:        #eaefee;
+  --surface:      #fbfcfc;
+  --surface-2:    #f2f5f5;
+  --surface-sunk: #e3e9e8;
+  --ink:          #0f1a1c;
+  --ink-2:        #46575b;
+  --ink-3:        #74858a;
+  --rule:         #d6dfdf;
+  --rule-strong:  #b9c6c7;
+  --ring:         rgba(15, 26, 28, .10);
+
+  /* accent: Andaman teal */
+  --accent:       #0b6f7a;
+  --accent-soft:  #dcefef;
+  --accent-ink:   #08545c;
+
+  /* severity: one-hue ordinal ramp, validated (light end 2.02:1 on surface) */
+  --sev-affected: #f0a08c;
+  --sev-severe:   #dd5b47;
+  --sev-fatal:    #a32222;
+  --sev-affected-ink: #8a3a24;
+  --sev-severe-ink:   #8f2a19;
+  --sev-fatal-ink:    #7d1414;
+
+  /* rain series: categorical slots 1-3 (validated all-pairs) */
+  --s1: #2a78d6;  /* Dawei */
+  --s2: #eb6834;  /* Launglon */
+  --s3: #1baf7a;  /* Thayetchaung */
+  --rain:       #86b6ef;
+  --rain-peak:  #1c5cab;
+  --rain-fcst:  #cde2fb;
+
+  /* map */
+  --sea:          #c9dcdf;
+  --land:         #f6f8f7;
+  --land-ctx:     #e4e9e8;
+  --foreign:      #dde2e1;
+  --water:        #9fc3cc;
+  --lowland:      #e5c77a;
+  --mining:       #8a5a36;
+  --road-main:    #c0553a;
+  --road-sec:     #d99a52;
+  --road-ter:     #b7c0c0;
+  --rail:         #5b6669;
+  --admin:        #6f7f83;
+  --vt-line:      #c6d1d2;
+  --vt-hit:       #f3d6cc;
+  --ward-flood:   #5b9bd5;
+  --cutoff:       #7a2f8f;
+  --school:       #6d5bd0;
+  --hospital:     #0b6f7a;
+  --village:      #8b999c;
+  --halo:         #fbfcfc;
+
+  --grid:  #e3e9e9;
+  --axis:  #c3cdce;
+
+  --shadow: 0 1px 2px rgba(15,26,28,.06), 0 6px 18px rgba(15,26,28,.06);
+
+  --display: "Archivo", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  --mm:   "Noto Sans Myanmar", "Myanmar Text", "Padauk", "Pyidaungsu", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --plane:        #0c1213;
+    --surface:      #151c1e;
+    --surface-2:    #1b2426;
+    --surface-sunk: #101718;
+    --ink:          #eef3f3;
+    --ink-2:        #a8b8bb;
+    --ink-3:        #7c8d91;
+    --rule:         #253033;
+    --rule-strong:  #36454a;
+    --ring:         rgba(238, 243, 243, .12);
+    --accent:       #3fb4c0;
+    --accent-soft:  #123236;
+    --accent-ink:   #86d3db;
+    --sev-affected: #f7c6b6;
+    --sev-severe:   #e2836c;
+    --sev-fatal:    #c43a2c;
+    --sev-affected-ink: #f4c1b0;
+    --sev-severe-ink:   #eda08b;
+    --sev-fatal-ink:    #f08e7c;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --rain:       #3987e5;
+    --rain-peak:  #86b6ef;
+    --rain-fcst:  #1c3f69;
+    --sea:          #0f2327;
+    --land:         #1a2224;
+    --land-ctx:     #151b1d;
+    --foreign:      #121819;
+    --water:        #1f4a55;
+    --lowland:      #8a7331;
+    --mining:       #b98357;
+    --road-main:    #d8765c;
+    --road-sec:     #b8864c;
+    --road-ter:     #3a4648;
+    --rail:         #8c999c;
+    --admin:        #8a9a9e;
+    --vt-line:      #2a3639;
+    --vt-hit:       #4a2a24;
+    --ward-flood:   #4a8bd0;
+    --cutoff:       #c07ad6;
+    --school:       #a498ee;
+    --hospital:     #3fb4c0;
+    --village:      #6d7c80;
+    --halo:         #10171a;
+    --grid:  #222c2e;
+    --axis:  #34423f;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane:        #0c1213;
+  --surface:      #151c1e;
+  --surface-2:    #1b2426;
+  --surface-sunk: #101718;
+  --ink:          #eef3f3;
+  --ink-2:        #a8b8bb;
+  --ink-3:        #7c8d91;
+  --rule:         #253033;
+  --rule-strong:  #36454a;
+  --ring:         rgba(238, 243, 243, .12);
+  --accent:       #3fb4c0;
+  --accent-soft:  #123236;
+  --accent-ink:   #86d3db;
+  --sev-affected: #f7c6b6;
+  --sev-severe:   #e2836c;
+  --sev-fatal:    #c43a2c;
+  --sev-affected-ink: #f4c1b0;
+  --sev-severe-ink:   #eda08b;
+  --sev-fatal-ink:    #f08e7c;
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --rain:       #3987e5;
+  --rain-peak:  #86b6ef;
+  --rain-fcst:  #1c3f69;
+  --sea:          #0f2327;
+  --land:         #1a2224;
+  --land-ctx:     #151b1d;
+  --foreign:      #121819;
+  --water:        #1f4a55;
+  --lowland:      #8a7331;
+  --mining:       #b98357;
+  --road-main:    #d8765c;
+  --road-sec:     #b8864c;
+  --road-ter:     #3a4648;
+  --rail:         #8c999c;
+  --admin:        #8a9a9e;
+  --vt-line:      #2a3639;
+  --vt-hit:       #4a2a24;
+  --ward-flood:   #4a8bd0;
+  --cutoff:       #c07ad6;
+  --school:       #a498ee;
+  --hospital:     #3fb4c0;
+  --village:      #6d7c80;
+  --halo:         #10171a;
+  --grid:  #222c2e;
+  --axis:  #34423f;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.3);
+}
+
+/* ================================================================ BASE */
+* { box-sizing: border-box; }
+html, body { background: var(--plane); }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.mm { font-family: var(--mm); line-height: 1.8; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+.eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500;
+}
+.muted { color: var(--ink-3); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.page { max-width: 1480px; margin: 0 auto; padding-inline: 20px; padding-block: 0 40px; display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 600px) { .page { padding-inline: 16px; } }
+
+/* ================================================================ MASTHEAD */
+.mast {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end;
+  padding-block: 26px 18px; border-bottom: 2px solid var(--ink);
+}
+.mast-l { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mast h1 {
+  font-size: clamp(30px, 4.6vw, 54px); line-height: .98; font-weight: 780;
+  font-variation-settings: "wdth" 78; text-transform: uppercase; letter-spacing: -0.005em;
+}
+.mast h1 .loc { color: var(--accent); }
+.mast .dek { max-width: 72ch; color: var(--ink-2); font-size: 15px; }
+.mast .dek-mm { color: var(--ink-3); font-size: 14px; }
+.mast-r { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.live {
+  display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--sev-fatal) 12%, var(--surface)); color: var(--sev-fatal-ink);
+  font-size: 12.5px; font-weight: 600; border: 1px solid color-mix(in srgb, var(--sev-fatal) 30%, transparent);
+}
+.live .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--sev-fatal); }
+@media (prefers-reduced-motion: no-preference) {
+  .live .pulse { animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+}
+.src-line { font-size: 12.5px; color: var(--ink-3); text-align: right; }
+.theme-btn {
+  border: 1px solid var(--rule-strong); background: var(--surface); border-radius: 6px;
+  padding: 5px 10px; font-size: 12.5px; color: var(--ink-2);
+}
+@media (max-width: 760px) {
+  .mast { grid-template-columns: 1fr; }
+  .mast-r { align-items: flex-start; }
+  .src-line { text-align: left; }
+}
+
+/* ================================================================ KPI STRIP */
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.kpi { background: var(--surface); padding: 14px 16px 13px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.kpi-l { font-size: 12.5px; color: var(--ink-2); display: flex; align-items: center; gap: 7px; }
+.kpi-l .sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+.kpi-v { font-family: var(--display); font-variation-settings: "wdth" 85; font-size: 34px; font-weight: 720; line-height: 1.05; letter-spacing: -0.01em; }
+.kpi-v small { font-size: 16px; font-weight: 600; color: var(--ink-2); margin-left: 3px; }
+.kpi-s { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px)  { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi-v { font-size: 28px; } }
+
+/* ================================================================ WORKSPACE */
+.work {
+  display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 0;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+  height: min(78vh, 820px); min-height: 560px;
+}
+.map-wrap { position: relative; min-width: 0; border-right: 1px solid var(--rule); }
+#map { position: absolute; inset: 0; background: var(--sea); }
+.panel { display: flex; flex-direction: column; min-height: 0; background: var(--surface); }
+@media (max-width: 980px) {
+  .work { grid-template-columns: 1fr; height: auto; min-height: 0; }
+  .map-wrap { height: 62vh; min-height: 420px; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .panel { max-height: 640px; }
+}
+
+.map-tools { position: absolute; top: 10px; right: 10px; z-index: 500; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.map-btn {
+  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 6px;
+  padding: 5px 10px; font-size: 12.5px; box-shadow: var(--shadow); color: var(--ink);
+}
+.map-btn:hover { border-color: var(--accent); }
+.map-btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
+
+.legend {
+  position: absolute; left: 10px; bottom: 26px; z-index: 500; background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; font-size: 12px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 7px; max-width: 270px;
+}
+.legend h4 { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin: 0; }
+.lg-row { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.lg-i { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); white-space: nowrap; }
+.lg-i svg { flex: none; }
+.lg-sw { width: 14px; height: 10px; border-radius: 2px; flex: none; }
+.legend-toggle { display: none; }
+@media (max-width: 600px) {
+  .legend { max-width: calc(100% - 20px); }
+  .legend.collapsed > :not(.legend-toggle) { display: none; }
+  .legend-toggle { display: block; background: none; border: 0; padding: 0; font-size: 12px; font-weight: 600; text-align: left; }
+}
+
+/* leaflet skin */
+/* the page reset caps canvas/svg at 100% of their parent; Leaflet's panes have no
+   width, so without this every canvas-rendered vector layer collapses to nothing */
+.leaflet-container canvas, .leaflet-container svg { max-width: none !important; max-height: none !important; }
+.leaflet-container { font-family: var(--sans); background: var(--sea); }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 85%, transparent) !important; color: var(--ink-3) !important; font-size: 10.5px !important; }
+.leaflet-control-attribution a { color: var(--accent) !important; }
+.leaflet-bar a { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--rule) !important; }
+.leaflet-tooltip {
+  background: var(--surface); color: var(--ink); border: 1px solid var(--rule-strong); border-radius: 6px;
+  box-shadow: var(--shadow); font-size: 12.5px; padding: 6px 9px; line-height: 1.45;
+}
+.leaflet-tooltip-top:before { border-top-color: var(--rule-strong); }
+.leaflet-tooltip-bottom:before { border-bottom-color: var(--rule-strong); }
+.leaflet-tooltip-left:before { border-left-color: var(--rule-strong); }
+.leaflet-tooltip-right:before { border-right-color: var(--rule-strong); }
+.leaflet-tooltip .mm { font-size: 12.5px; color: var(--ink-2); }
+.tt-k { font-size: 11px; color: var(--ink-3); }
+.lbl-ts, .lbl-town, .lbl-sea, .lbl-river {
+  background: none; border: 0; box-shadow: none; padding: 0; pointer-events: none;
+  text-shadow: 0 0 3px var(--halo), 0 0 3px var(--halo), 0 0 2px var(--halo);
+}
+.lbl-ts:before, .lbl-town:before, .lbl-sea:before, .lbl-river:before { display: none; }
+.lbl-ts { font-family: var(--display); font-variation-settings: "wdth" 80; font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--admin); }
+.lbl-town { font-weight: 600; font-size: 12.5px; color: var(--ink); }
+.lbl-town.cap { font-size: 14px; }
+.lbl-sea { font-style: italic; font-size: 13px; letter-spacing: .2em; color: color-mix(in srgb, var(--accent) 70%, var(--ink-3)); text-transform: uppercase; }
+.lbl-river { font-style: italic; font-size: 11.5px; color: color-mix(in srgb, var(--accent) 80%, var(--ink-3)); }
+.site-icon { background: none; border: 0; }
+.site-icon svg { overflow: visible; display: block; }
+.site-icon.sel svg .ring { stroke: var(--ink); stroke-width: 2.5; }
+.fac-icon { background: none; border: 0; }
+
+/* ================================================================ PANEL */
+.tabs { display: flex; border-bottom: 1px solid var(--rule); flex: none; }
+.tab {
+  flex: 1; background: none; border: 0; border-bottom: 2px solid transparent; padding: 11px 8px 9px;
+  font-size: 13px; font-weight: 600; color: var(--ink-3);
+}
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpane { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+.tabpane[hidden] { display: none !important; }
+
+.detail { padding: 16px 16px 14px; border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; gap: 10px; background: var(--surface-2); }
+.detail h3 { font-size: 22px; font-weight: 720; font-variation-settings: "wdth" 88; line-height: 1.1; }
+.detail .mm-name { font-size: 15px; color: var(--ink-2); margin-top: -4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600;
+  padding: 2px 8px 2px 7px; border-radius: 999px; border: 1px solid var(--rule-strong); color: var(--ink-2); background: var(--surface);
+}
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.chip.sev-fatal { color: var(--sev-fatal-ink); border-color: color-mix(in srgb, var(--sev-fatal) 45%, transparent); background: color-mix(in srgb, var(--sev-fatal) 9%, var(--surface)); }
+.chip.sev-severe { color: var(--sev-severe-ink); border-color: color-mix(in srgb, var(--sev-severe) 45%, transparent); background: color-mix(in srgb, var(--sev-severe) 9%, var(--surface)); }
+.chip.sev-affected { color: var(--sev-affected-ink); border-color: color-mix(in srgb, var(--sev-affected) 70%, transparent); background: color-mix(in srgb, var(--sev-affected) 12%, var(--surface)); }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 8px; }
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 9px; }
+.fig b { display: block; font-family: var(--display); font-size: 21px; font-weight: 720; line-height: 1.1; font-variation-settings: "wdth" 85; }
+.fig span { font-size: 11.5px; color: var(--ink-3); }
+.detail p.body { font-size: 14px; color: var(--ink); }
+.quote { border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; display: flex; flex-direction: column; gap: 4px; }
+.quote .q-en { font-style: italic; }
+.quote .q-mm { font-size: 13px; color: var(--ink-2); }
+.quote .q-by { font-size: 12px; color: var(--ink-3); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; }
+.kv dt { color: var(--ink-3); }
+.kv dd { margin: 0; color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
+.nearby { font-size: 12.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 3px; }
+.nearby li { list-style: none; }
+.nearby ul { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+
+.list-tools { padding: 12px 16px 8px; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; background: var(--surface); z-index: 2; border-bottom: 1px solid var(--rule); }
+.search {
+  width: 100%; border: 1px solid var(--rule-strong); border-radius: 6px; padding: 7px 10px; background: var(--surface); font-size: 13.5px;
+}
+.filters { display: flex; flex-wrap: wrap; gap: 5px; }
+.fbtn { border: 1px solid var(--rule-strong); background: var(--surface); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--ink-2); }
+.fbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.site-list { padding: 4px 0 12px; }
+.grp { padding: 10px 16px 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); display: flex; justify-content: space-between; }
+.row {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 2px 10px; align-items: start;
+  width: 100%; text-align: left; background: none; border: 0; padding: 7px 16px; border-left: 3px solid transparent;
+}
+.row:hover { background: var(--surface-2); }
+.row[aria-current="true"] { background: var(--accent-soft); border-left-color: var(--accent); }
+.row .ic { padding-top: 3px; }
+.row .nm { font-weight: 600; font-size: 13.5px; line-height: 1.3; }
+.row .nm .mm { font-weight: 400; color: var(--ink-3); font-size: 12.5px; margin-left: 4px; }
+.row .sub { grid-column: 2 / 4; font-size: 12px; color: var(--ink-3); line-height: 1.35; }
+.row .tag { font-size: 11px; color: var(--ink-3); font-family: var(--mono); padding-top: 2px; }
+.empty { padding: 16px; color: var(--ink-3); font-size: 13px; }
+
+.layers { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 16px; }
+.layers fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.layers legend { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; padding: 0; }
+.chk { display: grid; grid-template-columns: 18px 18px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 13px; }
+.chk input { margin: 0; accent-color: var(--accent); }
+.chk .src { grid-column: 3; font-size: 11.5px; color: var(--ink-3); margin-top: -4px; }
+.chk.dis { opacity: .5; }
+
+/* ================================================================ CARDS */
+.grid { display: grid; gap: 18px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g-7-5 { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+@media (max-width: 980px) { .g2, .g-7-5 { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card-h { display: flex; flex-direction: column; gap: 4px; }
+.card h2 { font-size: 21px; font-weight: 720; font-variation-settings: "wdth" 86; line-height: 1.15; }
+.card .lede { color: var(--ink-2); font-size: 13.5px; max-width: 72ch; }
+.note { font-size: 12px; color: var(--ink-3); line-height: 1.5; max-width: 90ch; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--ink-3); font-family: var(--sans); font-size: 11px; }
+.chart .tick-line { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .lbl-ink { fill: var(--ink-2); }
+.chart .lbl-strong { fill: var(--ink); font-weight: 600; }
+.ch-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+.ch-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ch-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.ch-legend i.sq { width: 10px; height: 10px; border-radius: 2px; }
+.ch-legend i.dash { height: 0; border-top: 2px dashed var(--ink-2); background: none !important; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 20; background: var(--surface); border: 1px solid var(--rule-strong);
+  border-radius: 6px; box-shadow: var(--shadow); padding: 7px 10px; font-size: 12.5px; line-height: 1.45; min-width: 120px; max-width: 280px;
+  opacity: 0; transition: opacity .08s;
+}
+.tip.on { opacity: 1; }
+.tip b { font-weight: 600; }
+.tip .r { display: flex; align-items: center; gap: 7px; justify-content: space-between; }
+.tip .r i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+/* ledger + township tables */
+.tbl-wrap { overflow-x: auto; margin-inline: -4px; }
+table.tbl { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 640px; }
+.tbl th { text-align: left; font-weight: 500; font-size: 11.5px; color: var(--ink-3); padding: 6px 8px; border-bottom: 1px solid var(--rule-strong); vertical-align: bottom; }
+.tbl td { padding: 8px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.tbl tr.clickable { cursor: pointer; }
+.tbl tr.clickable:hover td { background: var(--surface-2); }
+.tbl .r { text-align: right; }
+.tbl td.site b { font-weight: 600; }
+.tbl td.site .mm { color: var(--ink-3); font-size: 12px; display: block; line-height: 1.5; }
+.bar-cell { display: grid; grid-template-columns: minmax(0, 1fr) 54px; align-items: center; gap: 8px; min-width: 110px; }
+.bar-cell .trk { height: 10px; position: relative; }
+.bar-cell .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 3px 3px 0; min-width: 2px; }
+.bar-cell .v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.bar-cell .v.txt { font-family: var(--sans); font-size: 12px; color: var(--ink-2); font-style: italic; }
+.dash-v { color: var(--ink-3); }
+
+/* cut-off card */
+.cut-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.cut-stat { border-top: 2px solid var(--cutoff); padding-top: 6px; }
+.cut-stat b { font-family: var(--display); font-variation-settings: "wdth" 85; font-size: 30px; font-weight: 720; line-height: 1.05; display: block; }
+.cut-stat span { font-size: 12px; color: var(--ink-2); }
+.act { align-self: flex-start; border: 1px solid var(--accent); color: var(--accent-ink); background: var(--accent-soft); border-radius: 6px; padding: 6px 12px; font-size: 13px; font-weight: 600; }
+
+/* timeline */
+.tl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tl li { display: grid; grid-template-columns: 26px 128px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.tl li:last-child { border-bottom: 0; }
+.tl .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: 11px; background: var(--surface-sunk); color: var(--ink-2); font-weight: 500; }
+.tl .n.k-landslide { background: var(--sev-fatal); color: #fff; }
+.tl .n.k-toll { background: var(--ink); color: var(--surface); }
+.tl .n.k-access { background: var(--cutoff); color: #fff; }
+.tl .n.k-flood { background: var(--ward-flood); color: #fff; }
+.tl .n.k-rain, .tl .n.k-forecast { background: var(--rain); color: #0b2a4f; }
+.tl .n.k-rescue { background: var(--accent); color: #fff; }
+.tl .when { font-size: 12.5px; color: var(--ink-2); font-weight: 600; line-height: 1.35; }
+.tl .when span { display: block; font-weight: 400; color: var(--ink-3); font-size: 11.5px; }
+.tl .what { font-size: 13.5px; }
+.tl .what button { background: none; border: 0; padding: 0; color: var(--accent); font-size: 12px; font-weight: 600; margin-left: 6px; }
+@media (max-width: 560px) { .tl li { grid-template-columns: 26px minmax(0, 1fr); } .tl .what { grid-column: 2; } }
+
+/* voices */
+.voices { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.voice { display: flex; flex-direction: column; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.voice:last-child { border-bottom: 0; padding-bottom: 0; }
+.voice .v-en { font-family: var(--display); font-variation-settings: "wdth" 92; font-size: 17px; font-weight: 560; line-height: 1.35; }
+.voice .v-mm { font-size: 13.5px; color: var(--ink-2); }
+.voice .v-by { font-size: 12px; color: var(--ink-3); }
+
+/* method */
+.method { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+@media (max-width: 980px) { .method { grid-template-columns: 1fr; } }
+.method h3 { font-size: 15px; font-weight: 700; font-variation-settings: "wdth" 90; margin-bottom: 6px; }
+.method p, .method li { font-size: 13px; color: var(--ink-2); }
+.method ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.grade { display: grid; grid-template-columns: 70px 28px minmax(0, 1fr); gap: 2px 8px; font-size: 12.5px; padding: 4px 0; border-bottom: 1px solid var(--rule); }
+.grade b { font-family: var(--mono); font-weight: 500; }
+.grade .c { font-family: var(--mono); text-align: right; }
+.grade .d { color: var(--ink-3); }
+footer.foot { font-size: 12px; color: var(--ink-3); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid var(--rule); padding-top: 14px; }
+</style>
+
+<div class="page">
+
+  <header class="mast">
+    <div class="mast-l">
+      <span class="eyebrow">Situation map · Tanintharyi Region, Myanmar · 26–27 September 2026</span>
+      <h1>Floods and landslides in <span class="loc">Dawei District</span></h1>
+      <p class="dek">Record rain on 26–27 September flooded Dawei and Thayetchaung and brought hillsides down across Launglon, where people are dead, dozens are missing and a landslide on the only mapped road south stopped rescuers. Every place named in the Dawei Watch report is mapped here on MIMU geography.</p>
+      <p class="dek-mm mm">ရေကြီး တောင်ပြိုမှုတွေနဲ့ ဒုက္ခပင်လယ်ဝေတဲ့ ထားဝယ်ဒေသ · Dawei Watch</p>
+    </div>
+    <div class="mast-r">
+      <span class="live"><span class="pulse" aria-hidden="true"></span>Heavy rain forecast through 28 Sep</span>
+      <span class="src-line">Report: <a href="https://web.facebook.com/share/p/18PNp9p4T4/" target="_blank" rel="noopener">Dawei Watch, 27 Sep</a> · Geography: MIMU</span>
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme">Theme: system</button>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis" aria-label="Headline figures"></section>
+
+  <section class="work" aria-label="Map and reported sites">
+    <div class="map-wrap">
+      <div id="map" role="region" aria-label="Map of reported flood and landslide sites"></div>
+      <div class="map-tools">
+        <button class="map-btn" type="button" id="btnCore">Launglon–Dawei</button>
+        <button class="map-btn" type="button" id="btnDistrict">Whole district</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tab-sites" aria-controls="pane-sites" aria-selected="true" type="button">Reported sites</button>
+        <button class="tab" role="tab" id="tab-layers" aria-controls="pane-layers" aria-selected="false" type="button">Map layers</button>
+      </div>
+      <div class="tabpane" id="pane-sites" role="tabpanel" aria-labelledby="tab-sites">
+        <div class="detail" id="detail" aria-live="polite"></div>
+        <div class="list-tools">
+          <input class="search" id="q" type="search" placeholder="Find a village (English or မြန်မာ)" aria-label="Find a village" />
+          <div class="filters" id="filters"></div>
+        </div>
+        <div class="site-list" id="siteList"></div>
+      </div>
+      <div class="tabpane" id="pane-layers" role="tabpanel" aria-labelledby="tab-layers" hidden>
+        <div class="layers" id="layers"></div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="grid g-7-5">
+    <section class="card" aria-labelledby="h-rain">
+      <div class="card-h">
+        <span class="eyebrow">Rainfall</span>
+        <h2 id="h-rain">A month's worth of rain in a day</h2>
+        <p class="lede" id="rainLede"></p>
+      </div>
+      <div class="ch-legend" id="rainLegend"></div>
+      <div class="chart" id="chRain"></div>
+      <p class="note" id="rainNote"></p>
+    </section>
+    <section class="card" aria-labelledby="h-storm">
+      <div class="card-h">
+        <span class="eyebrow">Storm build-up, 25–28 Sep</span>
+        <h2 id="h-storm">Rain piled up overnight on 26 Sep</h2>
+        <p class="lede">Cumulative model rainfall at the three towns, from midnight on 25 Sep. Numbered markers are the events on the timeline below.</p>
+      </div>
+      <div class="ch-legend" id="stormLegend"></div>
+      <div class="chart" id="chStorm"></div>
+      <p class="note" id="stormNote"></p>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-ledger">
+    <div class="card-h">
+      <span class="eyebrow">Human toll and damage</span>
+      <h2 id="h-ledger">Where the report gives numbers</h2>
+      <p class="lede">Every village where Dawei Watch gave a count. Bars share a scale within each column. Words stand in where the report gave words, not numbers. Select a row to find it on the map.</p>
+    </div>
+    <div class="tbl-wrap"><table class="tbl" id="ledger"></table></div>
+    <p class="note" id="ledgerNote"></p>
+  </section>
+
+  <div class="grid g2">
+    <section class="card" aria-labelledby="h-cut">
+      <div class="card-h">
+        <span class="eyebrow">Access · MIMU spatial analysis</span>
+        <h2 id="h-cut">Beyond the Poe Zar Pin landslide</h2>
+        <p class="lede" id="cutLede"></p>
+      </div>
+      <div class="cut-stats" id="cutStats"></div>
+      <p class="note" id="cutNote"></p>
+      <button class="act" type="button" id="btnCut">Show the area on the map</button>
+    </section>
+    <section class="card" aria-labelledby="h-near">
+      <div class="card-h">
+        <span class="eyebrow">Facilities · MIMU spatial analysis</span>
+        <h2 id="h-near">Schools and hospitals close to reported sites</h2>
+        <p class="lede" id="nearLede"></p>
+      </div>
+      <div class="ch-legend" id="nearLegend"></div>
+      <div class="chart" id="chNear"></div>
+      <p class="note" id="nearNote"></p>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-ts">
+    <div class="card-h">
+      <span class="eyebrow">Townships of Dawei District</span>
+      <h2 id="h-ts">Launglon took the brunt; Yebyu escaped with flooded roads</h2>
+      <p class="lede">What the report says about each township, set against what MIMU records there. Low-lying land is the share of the township below 5 m elevation. Mining is the area of mine sites mapped from satellite imagery taken in 2013–16.</p>
+    </div>
+    <div class="tbl-wrap"><table class="tbl" id="tsTable"></table></div>
+    <p class="note">Reported sites count the places the report names in each township, including the towns themselves. Rain is the Open-Meteo model total for 26–27 Sep at the township's main town. Yebyu has no model point.</p>
+  </section>
+
+  <div class="grid g-7-5">
+    <section class="card" aria-labelledby="h-tl">
+      <div class="card-h">
+        <span class="eyebrow">Sequence of events</span>
+        <h2 id="h-tl">From the first slide to the stalled rescue</h2>
+        <p class="lede">Times are as the report gives them; most are parts of the day, not clock times.</p>
+      </div>
+      <ol class="tl" id="timeline"></ol>
+    </section>
+    <section class="card" aria-labelledby="h-voices">
+      <div class="card-h">
+        <span class="eyebrow">Voices from the villages</span>
+        <h2 id="h-voices">“Never seen anything like it”</h2>
+      </div>
+      <div class="voices" id="voices"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="h-method">
+    <div class="card-h">
+      <span class="eyebrow">Method, sources and limits</span>
+      <h2 id="h-method">How this map was made</h2>
+    </div>
+    <div class="method" id="method"></div>
+  </section>
+
+  <footer class="foot">
+    <span>Compiled from Dawei Watch reporting of 27 Sep 2026. Figures are as reported that day and are unverified.</span>
+    <span>Boundaries, villages, roads, facilities: Myanmar Information Management Unit (MIMU).</span>
+  </footer>
+</div>
+
+<script type="application/json" id="d-flood">/*__FLOOD__*/</script>
+<script type="application/json" id="d-geo">/*__GEO__*/</script>
+<script type="application/json" id="d-an">/*__ANALYSIS__*/</script>
+<script type="application/json" id="d-rain">/*__RAIN__*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(() => {
+"use strict";
+const FLOOD = JSON.parse(document.getElementById("d-flood").textContent);
+const GEO   = JSON.parse(document.getElementById("d-geo").textContent);
+const AN    = JSON.parse(document.getElementById("d-an").textContent);
+const RAIN  = JSON.parse(document.getElementById("d-rain").textContent);
+
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => n == null ? "–" : Number(n).toLocaleString("en-US");
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const SVGNS = "http://www.w3.org/2000/svg";
+
+const SITES = FLOOD.sites;
+const BY_ID = Object.fromEntries(SITES.map(s => [s.id, s]));
+const INC = Object.fromEntries(FLOOD.incidents.map(i => [i.id, i]));
+const SEV_LABEL = { fatal: "Deaths or missing", severe: "Severe damage", affected: "Affected" };
+const SEV_ORDER = { fatal: 0, severe: 1, affected: 2 };
+const HAZ_LABEL = { landslide: "Landslide", flood: "Flood", both: "Flood and landslide" };
+const MATCH_LABEL = {
+  exact: "Exact MIMU match", variant: "MIMU spelling or township differs", probable: "Probable MIMU match",
+  approx: "Approximate position", unlocated: "Not found in MIMU",
+};
+
+/* ------------------------------------------------------------------ theme */
+const root = document.documentElement;
+const THEMES = ["system", "light", "dark"];
+let themeIx = 0;
+try { const t = localStorage.getItem("dawei-theme"); if (THEMES.includes(t)) themeIx = THEMES.indexOf(t); } catch (e) {}
+function applyTheme() {
+  const t = THEMES[themeIx];
+  if (t === "system") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
+  $("#themeBtn").textContent = "Theme: " + t;
+}
+$("#themeBtn").addEventListener("click", () => {
+  themeIx = (themeIx + 1) % 3; applyTheme();
+  try { localStorage.setItem("dawei-theme", THEMES[themeIx]); } catch (e) {}
+});
+applyTheme();
+const onTheme = [];
+new MutationObserver(() => onTheme.forEach(f => f())).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => onTheme.forEach(f => f()));
+
+/* ------------------------------------------------------------------ glyphs */
+function glyph(hazard, sev, size = 18, opts = {}) {
+  const fill = `var(--sev-${sev})`;
+  const r = size / 2, c = r + 2, w = size + 4;
+  let shape;
+  if (hazard === "landslide") {
+    const h = size * 0.95;
+    shape = `<path class="ring" d="M${c} ${c - h / 2 - 1} L${c + h / 2 + 1} ${c + h / 2 - 1} L${c - h / 2 - 1} ${c + h / 2 - 1} Z" style="fill:${fill};stroke:var(--halo);stroke-width:2;stroke-linejoin:round"/>`;
+  } else if (hazard === "flood") {
+    shape = `<circle class="ring" cx="${c}" cy="${c}" r="${r - 1}" style="fill:${fill};stroke:var(--halo);stroke-width:2"/>`;
+  } else {
+    const d = r;
+    shape = `<path class="ring" d="M${c} ${c - d} L${c + d} ${c} L${c} ${c + d} L${c - d} ${c} Z" style="fill:${fill};stroke:var(--halo);stroke-width:2;stroke-linejoin:round"/>`;
+  }
+  const approx = opts.approx ? `<circle cx="${c}" cy="${c}" r="${r + 4}" style="fill:none;stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:2.5 2.5"/>` : "";
+  const relief = opts.relief ? `<path d="M${c + r - 1} ${c - r - 3} l5 4 v5 h-10 v-5 z" style="fill:var(--accent);stroke:var(--halo);stroke-width:1.4"/>` : "";
+  return `<svg width="${w}" height="${w}" viewBox="0 0 ${w} ${w}" aria-hidden="true">${approx}${shape}${relief}</svg>`;
+}
+function blockGlyph(size = 20) {
+  const c = size / 2 + 2, w = size + 4, r = size / 2;
+  return `<svg width="${w}" height="${w}" viewBox="0 0 ${w} ${w}" aria-hidden="true"><rect x="${c - r}" y="${c - r}" width="${size}" height="${size}" rx="3" style="fill:var(--cutoff);stroke:var(--halo);stroke-width:2"/><path d="M${c - 5} ${c - 5} L${c + 5} ${c + 5} M${c + 5} ${c - 5} L${c - 5} ${c + 5}" style="stroke:#fff;stroke-width:2.6;stroke-linecap:round"/></svg>`;
+}
+function bridgeGlyph(size = 20) {
+  const c = size / 2 + 2, w = size + 4, r = size / 2;
+  return `<svg width="${w}" height="${w}" viewBox="0 0 ${w} ${w}" aria-hidden="true"><rect x="${c - r}" y="${c - r}" width="${size}" height="${size}" rx="3" style="fill:var(--ward-flood);stroke:var(--halo);stroke-width:2"/><path d="M${c - 6} ${c + 2} Q${c} ${c - 6} ${c + 6} ${c + 2} M${c - 7} ${c + 5} q2 -2 4 0 t4 0 t4 0 t4 0" style="fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round"/></svg>`;
+}
+function hospGlyph(size = 16) {
+  const c = size / 2 + 1, w = size + 2;
+  return `<svg width="${w}" height="${w}" viewBox="0 0 ${w} ${w}" aria-hidden="true"><rect x="1" y="1" width="${size}" height="${size}" rx="3" style="fill:var(--hospital);stroke:var(--halo);stroke-width:1.5"/><path d="M${c} ${c - 4.5} V${c + 4.5} M${c - 4.5} ${c} H${c + 4.5}" style="stroke:#fff;stroke-width:2.4;stroke-linecap:round"/></svg>`;
+}
+
+/* ------------------------------------------------------------------ figures */
+const F = FLOOD.facts;
+function siteFigs(s) {
+  const out = [];
+  if (s.dead) out.push(`${s.dead} dead`);
+  if (s.missing) out.push(`${s.id === "ka-det-nge" ? "~" : ""}${s.missing} missing`);
+  if (s.missing_text) out.push(`${s.missing_text} missing`);
+  if (s.rescued) out.push(`${s.rescued} rescued alive`);
+  if (s.houses) out.push(`${s.id === "kayin-gyi" ? "~" : ""}${s.houses}${s.id === "ka-det-nge-htein" ? "+" : ""} houses buried`);
+  if (s.sheltering) out.push(`${s.id === "yay-phyu" ? "~" : ""}${s.sheltering}${s.id === "kayin-gyi" ? "+" : ""} sheltering`);
+  return out;
+}
+
+/* ------------------------------------------------------------------ KPIs */
+(function kpis() {
+  const t = F.thayetchaung_official;
+  const tiles = [
+    { l: "Bodies recovered", sw: "var(--sev-fatal)", v: "3", s: "Launglon Township, by the afternoon of 27 Sep" },
+    { l: "Missing, counted", sw: "var(--sev-fatal)", v: "12", sm: "+", s: "Kadet Nge ~10, Kyauk Ni Maw 2 · plus “dozens” at Kadet Nge Htein" },
+    { l: "Houses buried", sw: "var(--sev-severe)", v: "80", sm: "+", s: "Kadet Nge Htein 50+, Kayin Gyi ~30" },
+    { l: "People sheltering", sw: "var(--accent)", v: "560", sm: "+", s: "Yay Phyu camp ~500, Kayin Gyi monastery 60+" },
+    { l: "Affected, Thayetchaung", sw: "var(--ward-flood)", v: "18,000", sm: "+", s: `${t.wards} town wards under ${t.depth_ft[0]}–${t.depth_ft[1]} ft · official figure` },
+    { l: "Rain at Dawei", sw: "var(--rain-peak)", v: String(F.record_mm), sm: "mm", s: `${F.record_in} in, a record · old record ${F.prev_record_in} in` },
+  ];
+  $("#kpis").innerHTML = tiles.map(k => `
+    <div class="kpi"><span class="kpi-l"><span class="sw" style="background:${k.sw}"></span>${esc(k.l)}</span>
+    <span class="kpi-v">${esc(k.v)}${k.sm ? `<small>${esc(k.sm)}</small>` : ""}</span>
+    <span class="kpi-s">${esc(k.s)}</span></div>`).join("");
+})();
+
+/* ================================================================== MAP */
+const map = L.map("map", { preferCanvas: true, zoomSnap: 0.25, zoomDelta: 0.5, minZoom: 7, maxZoom: 16, attributionControl: true });
+map.attributionControl.setPrefix(false);
+map.attributionControl.addAttribution('Geography: <a href="https://themimu.info" target="_blank" rel="noopener">MIMU</a> · Reports: Dawei Watch');
+const CORE = L.latLngBounds([[13.62, 97.98], [14.2, 98.42]]);
+const DISTRICT = L.geoJSON(GEO.district).getBounds();
+map.fitBounds(CORE, { padding: [10, 10] });
+
+const panes = [["pLand", 200], ["pLow", 210], ["pMine", 215], ["pVT", 220], ["pWard", 225], ["pWater", 230], ["pCut", 235],
+  ["pRoad", 240], ["pAdmin", 250], ["pVill", 420], ["pFac", 430], ["pInc", 640], ["pSite", 650]];
+panes.forEach(([n, z]) => { map.createPane(n).style.zIndex = z; });
+const canvas = {};
+panes.forEach(([n]) => { canvas[n] = L.canvas({ pane: n, padding: 0.3 }); });
+
+const layers = {};   // key -> {layer, on, paint}
+function addLayer(key, layer, on, paint) {
+  layers[key] = { layer, on, paint };
+  if (on) layer.addTo(map);
+}
+
+function paintAll() { Object.values(layers).forEach(l => l.paint && l.paint()); }
+onTheme.push(() => requestAnimationFrame(paintAll));
+
+// Land: Thailand, neighbouring townships, then Dawei District townships
+const lThai = L.geoJSON(GEO.thailand, { pane: "pLand", renderer: canvas.pLand, interactive: false });
+const lCtx = L.geoJSON(GEO.context, { pane: "pLand", renderer: canvas.pLand, interactive: false });
+const lTs = L.geoJSON(GEO.townships, { pane: "pLand", renderer: canvas.pLand, interactive: false });
+let tileOn = false;
+addLayer("land", L.layerGroup([lThai, lCtx, lTs]), true, () => {
+  const op = tileOn ? 0 : 1;
+  lThai.setStyle({ stroke: false, fillColor: css("--foreign"), fillOpacity: op });
+  lCtx.setStyle({ color: css("--rule-strong"), weight: 0.8, fillColor: css("--land-ctx"), fillOpacity: op });
+  lTs.setStyle({ stroke: false, fillColor: css("--land"), fillOpacity: op });
+});
+const lTsLine = L.geoJSON(GEO.townships, { pane: "pAdmin", renderer: canvas.pAdmin, interactive: false });
+const lDist = L.geoJSON(GEO.district, { pane: "pAdmin", renderer: canvas.pAdmin, interactive: false });
+addLayer("admin", L.layerGroup([lTsLine, lDist]), true, () => {
+  lTsLine.setStyle({ color: css("--admin"), weight: 1.2, dashArray: "6 4", fill: false, opacity: tileOn ? 0.9 : 0.8 });
+  lDist.setStyle({ color: css("--admin"), weight: 2.2, fill: false, opacity: 0.9 });
+});
+
+// Low-lying land (< 5 m)
+const lLow = L.geoJSON(GEO.lowland, { pane: "pLow", renderer: canvas.pLow, interactive: false });
+addLayer("lowland", lLow, true, () => lLow.setStyle({ stroke: false, fillColor: css("--lowland"), fillOpacity: 0.42 }));
+
+// Mining areas
+const lMine = L.geoJSON(GEO.mining, {
+  pane: "pMine", renderer: canvas.pMine,
+  onEachFeature: (f, l) => {
+    const p = f.properties;
+    l.bindTooltip(`<b>Mine site</b>${p.Mineral1 ? " · " + esc(p.Mineral1) : ""}<br><span class="tt-k">${esc(p.Notes || "Unnamed")} · ${esc(p.Township)} · ${fmt(p.Area_hect)} ha · imagery ${esc(p.ImageYear1)} · ${esc(p.Certainty)} certainty</span>`, { sticky: true });
+  },
+});
+addLayer("mining", lMine, true, () => lMine.setStyle({ color: css("--mining"), weight: 1, fillColor: css("--mining"), fillOpacity: 0.5 }));
+
+// Village tracts; tracts holding a reported site get a tint
+const lVT = L.geoJSON(GEO.vt, {
+  pane: "pVT", renderer: canvas.pVT,
+  onEachFeature: (f, l) => l.bindTooltip(`<b>${esc(f.properties.VT)}</b> <span class="mm">${esc(f.properties.VT_MMR)}</span><br><span class="tt-k">Village tract · ${esc(f.properties.TS)}${f.properties.sites ? ` · ${f.properties.sites} reported site${f.properties.sites > 1 ? "s" : ""}` : ""}</span>`, { sticky: true }),
+});
+addLayer("vt", lVT, true, () => lVT.eachLayer(l => l.setStyle({
+  color: css("--vt-line"), weight: 0.8, fillColor: css("--vt-hit"),
+  fillOpacity: l.feature.properties.sites ? (tileOn ? 0.25 : 0.55) : 0,
+})));
+
+// Wards: Thayetchaung's five, reported flooded 6-8 ft
+const lWard = L.geoJSON(GEO.wards, {
+  pane: "pWard", renderer: canvas.pWard,
+  onEachFeature: (f, l) => {
+    const p = f.properties;
+    l.bindTooltip(`<b>${esc(p.WARD)}</b> <span class="mm">${esc(p.WARD_MMR)}</span><br><span class="tt-k">${esc(p.TOWN)}${p.flooded ? " · one of 5 town wards flooded 6–8 ft (official)" : ""}${p.named ? " · named by Dawei Watch" : ""}</span>`, { sticky: true });
+  },
+});
+addLayer("wards", lWard, true, () => lWard.eachLayer(l => l.setStyle({
+  color: l.feature.properties.flooded ? css("--ward-flood") : css("--rule-strong"),
+  weight: l.feature.properties.flooded ? 1.4 : 0.6,
+  fillColor: css("--ward-flood"), fillOpacity: l.feature.properties.flooded ? 0.45 : 0,
+})));
+
+// Rivers
+const lRiv = L.geoJSON(GEO.rivers, { pane: "pWater", renderer: canvas.pWater, interactive: false });
+const lRivL = L.geoJSON(GEO.riverLines, { pane: "pWater", renderer: canvas.pWater, interactive: false });
+addLayer("rivers", L.layerGroup([lRiv, lRivL]), true, () => {
+  lRiv.setStyle({ stroke: false, fillColor: css("--water"), fillOpacity: 1 });
+  lRivL.setStyle({ color: css("--water"), weight: 1.6 });
+});
+
+// Roads and railway
+const lRoad = L.geoJSON(GEO.roads, { pane: "pRoad", renderer: canvas.pRoad, interactive: false });
+const lRail = L.geoJSON(GEO.railway, { pane: "pRoad", renderer: canvas.pRoad, interactive: false });
+addLayer("roads", L.layerGroup([lRoad, lRail]), true, () => {
+  lRoad.eachLayer(l => {
+    const t = l.feature.properties.Road_Type;
+    l.setStyle(t === "Main" ? { color: css("--road-main"), weight: 2.6 } : t === "Secondary" ? { color: css("--road-sec"), weight: 1.9 } : { color: css("--road-ter"), weight: 1.1 });
+  });
+  lRail.setStyle({ color: css("--rail"), weight: 1.4, dashArray: "1 4", lineCap: "butt" });
+});
+
+// Cut-off area south of the Poe Zar Pin slide
+const lCut = L.geoJSON(GEO.cutoff, { pane: "pCut", renderer: canvas.pCut, interactive: false });
+addLayer("cutoff", lCut, false, () => lCut.setStyle({ color: css("--cutoff"), weight: 2, dashArray: "7 5", fillColor: css("--cutoff"), fillOpacity: 0.1 }));
+
+// Dawei SEZ
+const lSez = L.geoJSON(GEO.sez, {
+  pane: "pCut", renderer: canvas.pCut,
+  onEachFeature: (f, l) => l.bindTooltip(`<b>${esc(f.properties.nmEng)}</b><br><span class="mm">${esc(f.properties.nmMya)}</span>`, { sticky: true }),
+});
+addLayer("sez", lSez, false, () => lSez.setStyle({ color: css("--ink-2"), weight: 1.2, dashArray: "2 3", fillOpacity: 0 }));
+
+// MIMU villages
+const repPcodes = new Set(SITES.map(s => String(s.pcode || "")));
+const lVill = L.geoJSON(GEO.villages, {
+  pane: "pVill",
+  pointToLayer: (f, ll) => L.circleMarker(ll, { renderer: canvas.pVill, radius: 2.6 }),
+  onEachFeature: (f, l) => {
+    const p = f.properties;
+    l.bindTooltip(`<b>${esc(p.VILLAGE)}</b> <span class="mm">${esc(p.VLG_MMR)}</span><br><span class="tt-k">MIMU village · ${esc(p.VT)} tract · ${esc(p.TS)}</span>`);
+  },
+});
+addLayer("villages", lVill, true, () => lVill.setStyle({ stroke: true, color: css("--halo"), weight: 0.8, fillColor: css("--village"), fillOpacity: 1 }));
+
+// Schools
+const lSch = L.geoJSON(GEO.schools, {
+  pane: "pFac",
+  pointToLayer: (f, ll) => L.circleMarker(ll, { renderer: canvas.pFac, radius: 3.2 }),
+  onEachFeature: (f, l) => l.bindTooltip(`<b class="mm">${esc(f.properties.schoolname)}</b><br><span class="tt-k">School (MIMU 2019) · ${esc(f.properties.urbanrural)} · ${esc(f.properties.mm_tsname)}</span>`),
+});
+addLayer("schools", lSch, false, () => lSch.setStyle({ color: css("--halo"), weight: 1, fillColor: css("--school"), fillOpacity: 1 }));
+
+// Hospitals
+const lHosp = L.geoJSON(GEO.hospitals, {
+  pane: "pFac",
+  pointToLayer: (f, ll) => L.marker(ll, { pane: "pFac", icon: L.divIcon({ className: "fac-icon", html: hospGlyph(15), iconSize: [17, 17], iconAnchor: [8.5, 8.5] }), keyboard: false }),
+  onEachFeature: (f, l) => {
+    const p = f.properties;
+    l.bindTooltip(`<b>${esc(p.nmHsp_eng)}</b><br><span class="mm">${esc(p.nmHsp_mya)}</span><br><span class="tt-k">${esc(p.lvlHsp_eng)} hospital · ${esc(p.bedClass)} beds · ${esc(p.TS_en)}</span>`);
+  },
+});
+addLayer("hospitals", lHosp, true);
+
+// Bridges (MIMU)
+const lBr = L.geoJSON(GEO.bridges, {
+  pane: "pFac",
+  pointToLayer: (f, ll) => L.circleMarker(ll, { renderer: canvas.pFac, radius: 3.5 }),
+  onEachFeature: (f, l) => { const p = f.properties; l.bindTooltip(`<b>${esc(p.nmEng || "Bridge")}</b> <span class="mm">${esc(p.nmMya || "")}</span><br><span class="tt-k">MIMU bridge${p.length_ft ? " · " + fmt(p.length_ft) + " ft" : ""}</span>`); },
+});
+addLayer("bridges", lBr, false, () => lBr.setStyle({ color: css("--ink"), weight: 1.5, fillColor: css("--surface"), fillOpacity: 1 }));
+
+// Labels: towns, townships, sea
+const townLbl = L.layerGroup(GEO.towns.features.map(f => {
+  const [x, y] = f.geometry.coordinates, p = f.properties;
+  return L.circleMarker([y, x], { renderer: canvas.pAdmin, pane: "pAdmin", radius: p.Level === "State/Region Capital" ? 4.5 : 3.5, interactive: false })
+    .bindTooltip(`${esc(p.Town)}`, { permanent: true, direction: "right", offset: [5, 0], className: "lbl-town" + (p.Level === "State/Region Capital" ? " cap" : "") });
+}));
+addLayer("towns", townLbl, true, () => townLbl.eachLayer(l => l.setStyle({ color: css("--halo"), weight: 1.5, fillColor: css("--ink"), fillOpacity: 1 })));
+const tsLbl = L.layerGroup(GEO.townships.features.map(f => L.tooltip({ permanent: true, direction: "center", className: "lbl-ts" }).setLatLng([f.properties.ly, f.properties.lx]).setContent(esc(f.properties.TS))));
+tsLbl.addTo(map);
+L.tooltip({ permanent: true, direction: "center", className: "lbl-sea" }).setLatLng([13.8, 97.75]).setContent("Andaman Sea").addTo(map);
+L.tooltip({ permanent: true, direction: "center", className: "lbl-river" }).setLatLng([14.19, 98.215]).setContent("Dawei River").addTo(map);
+
+// Incidents
+const lInc = L.layerGroup(FLOOD.incidents.filter(i => i.kind !== "landslide").map(i => {
+  const html = i.kind === "road-block" ? blockGlyph(18) : bridgeGlyph(18);
+  return L.marker([i.lat, i.lon], { pane: "pInc", icon: L.divIcon({ className: "site-icon", html, iconSize: [22, 22], iconAnchor: [11, 11] }), title: i.en })
+    .bindTooltip(`<b>${esc(i.en)}</b><br><span class="mm">${esc(i.mm)}</span><br>${esc(i.text)}${i.match === "approx" ? `<br><span class="tt-k">Approximate position: ${esc(i.match_note)}</span>` : ""}`, { direction: "top", offset: [0, -10], maxWidth: 280 });
+}));
+addLayer("incidents", lInc, true);
+
+// Reported sites
+const siteMarkers = {};
+const lSites = L.layerGroup(SITES.filter(s => s.lat != null).sort((a, b) => SEV_ORDER[b.sev] - SEV_ORDER[a.sev]).map(s => {
+  const size = s.sev === "fatal" ? 22 : s.sev === "severe" ? 19 : 15;
+  const html = glyph(s.hazard, s.sev, size, { approx: s.match === "approx", relief: s.roles.includes("relief") });
+  const pad = s.match === "approx" ? 10 : 4;
+  const w = size + 4 + (s.match === "approx" ? 0 : 0);
+  const m = L.marker([s.lat, s.lon], {
+    pane: "pSite", title: s.en, riseOnHover: true,
+    icon: L.divIcon({ className: "site-icon", html, iconSize: [w, w], iconAnchor: [w / 2, w / 2] }),
+  });
+  const figs = siteFigs(s);
+  m.bindTooltip(`<b>${esc(s.en)}</b> <span class="mm">${esc(s.mm)}</span><br><span class="tt-k">${esc(HAZ_LABEL[s.hazard])} · ${esc(SEV_LABEL[s.sev])}${figs.length ? " · " + esc(figs.join(", ")) : ""}</span>`, { direction: "top", offset: [0, -w / 2] });
+  m.on("click", () => select(s.id, { fly: false }));
+  siteMarkers[s.id] = m;
+  return m;
+}));
+addLayer("sites", lSites, true);
+
+paintAll();
+
+/* ---------------------------------------------------------- tile basemaps (optional) */
+const TILES = {
+  none: null,
+  imagery: { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", attr: "Imagery © Esri, Maxar, Earthstar Geographics", probe: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/229/394" },
+  topo: { url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", attr: "© OpenTopoMap (CC-BY-SA), © OpenStreetMap contributors", probe: "https://a.tile.opentopomap.org/9/394/229.png", maxNativeZoom: 15 },
+};
+const tileAvail = { none: true, imagery: null, topo: null };
+let tileLayer = null;
+function setBasemap(k) {
+  if (tileLayer) { map.removeLayer(tileLayer); tileLayer = null; }
+  const t = TILES[k];
+  tileOn = !!t;
+  if (t) {
+    tileLayer = L.tileLayer(t.url, { attribution: t.attr, maxZoom: 16, maxNativeZoom: t.maxNativeZoom || 17, pane: "tilePane" }).addTo(map);
+  }
+  paintAll();
+}
+function probe(k) {
+  return new Promise(res => {
+    const img = new Image();
+    const to = setTimeout(() => res(false), 6000);
+    img.onload = () => { clearTimeout(to); res(true); };
+    img.onerror = () => { clearTimeout(to); res(false); };
+    img.src = TILES[k].probe;
+  });
+}
+
+/* ---------------------------------------------------------- layer panel */
+const LAYER_UI = [
+  { group: "Reported by Dawei Watch", items: [
+    { k: "sites", label: "Reported sites", sw: glyph("both", "severe", 12), src: "47 places, geocoded to MIMU villages" },
+    { k: "incidents", label: "Road block and bridge", sw: blockGlyph(12), src: "Poe Zar Pin slide, San Chi bridge" },
+    { k: "wards", label: "Flooded Thayetchaung wards", sw: `<span class="lg-sw" style="background:var(--ward-flood);opacity:.7"></span>`, src: "MIMU wards v9.4; official figure" },
+    { k: "vt", label: "Village tracts with a report", sw: `<span class="lg-sw" style="background:var(--vt-hit)"></span>`, src: "MIMU village tracts v9.4" },
+    { k: "cutoff", label: "Area beyond the road block", sw: `<span class="lg-sw" style="border:2px dashed var(--cutoff)"></span>`, src: "Derived from MIMU township boundary" },
+  ]},
+  { group: "MIMU reference layers", items: [
+    { k: "villages", label: "All villages", sw: `<svg width="12" height="12"><circle cx="6" cy="6" r="3" style="fill:var(--village)"/></svg>`, src: "MIMU village points v9.7 (450)" },
+    { k: "hospitals", label: "Hospitals", sw: hospGlyph(11), src: "MIMU health facilities 2020 (12)" },
+    { k: "schools", label: "Schools", sw: `<svg width="12" height="12"><circle cx="6" cy="6" r="3.5" style="fill:var(--school)"/></svg>`, src: "MIMU formal schools 2019 (403)" },
+    { k: "roads", label: "Roads and railway", sw: `<span class="lg-sw" style="height:3px;background:var(--road-main)"></span>`, src: "MIMU roads 1:250k" },
+    { k: "bridges", label: "Bridges", sw: `<svg width="12" height="12"><circle cx="6" cy="6" r="3.5" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.5"/></svg>`, src: "MIMU bridge points" },
+    { k: "rivers", label: "Rivers", sw: `<span class="lg-sw" style="background:var(--water)"></span>`, src: "MIMU river network" },
+    { k: "lowland", label: "Land below 5 m", sw: `<span class="lg-sw" style="background:var(--lowland);opacity:.7"></span>`, src: "MIMU below-5 m layer" },
+    { k: "mining", label: "Mine sites", sw: `<span class="lg-sw" style="background:var(--mining);opacity:.7"></span>`, src: "MIMU mining areas, imagery 2013–16" },
+    { k: "sez", label: "Dawei Special Economic Zone", sw: `<span class="lg-sw" style="border:1.5px dotted var(--ink-2)"></span>`, src: "MIMU industrial zones 2024" },
+  ]},
+];
+function renderLayerPanel() {
+  const base = `
+    <fieldset><legend>Background</legend>
+      ${[["none", "MIMU vectors only", "Works everywhere, no internet tiles"], ["imagery", "Satellite imagery", "Esri World Imagery"], ["topo", "Topographic", "OpenTopoMap, shows hills"]].map(([k, l, s]) => `
+        <label class="chk ${tileAvail[k] === false ? "dis" : ""}"><input type="radio" name="bm" value="${k}" id="bm-${k}" ${k === "none" ? "checked" : ""} ${tileAvail[k] === false ? "disabled" : ""} /><span></span><span>${l}</span>
+        <span class="src">${tileAvail[k] === false ? "Can't load in this viewer. Open the standalone page to use it." : tileAvail[k] === null ? "Checking…" : s}</span></label>`).join("")}
+    </fieldset>`;
+  $("#layers").innerHTML = base + LAYER_UI.map(g => `
+    <fieldset><legend>${esc(g.group)}</legend>
+      ${g.items.map(it => `<label class="chk"><input type="checkbox" id="ly-${it.k}" data-k="${it.k}" ${layers[it.k].on ? "checked" : ""} /><span style="display:grid;place-items:center">${it.sw}</span><span>${esc(it.label)}</span><span class="src">${esc(it.src)}</span></label>`).join("")}
+    </fieldset>`).join("");
+  $$("#layers input[type=checkbox]").forEach(i => i.addEventListener("change", () => toggleLayer(i.dataset.k, i.checked)));
+  $$("#layers input[name=bm]").forEach(i => i.addEventListener("change", () => setBasemap(i.value)));
+  const cur = tileLayer ? Object.keys(TILES).find(k => TILES[k] && tileLayer._url === TILES[k].url) : "none";
+  const r = $(`#bm-${cur}`); if (r) r.checked = true;
+}
+function toggleLayer(k, on) {
+  const L_ = layers[k]; L_.on = on;
+  if (on) { L_.layer.addTo(map); L_.paint && L_.paint(); } else map.removeLayer(L_.layer);
+  const cb = $(`#ly-${k}`); if (cb) cb.checked = on;
+  if (k === "cutoff") $("#btnCut").textContent = on ? "Hide the area" : "Show the area on the map";
+}
+renderLayerPanel();
+Promise.all(["imagery", "topo"].map(k => probe(k).then(ok => { tileAvail[k] = ok; }))).then(renderLayerPanel);
+
+// Zoom-dependent visibility for dense layers
+function zoomRules() {
+  const z = map.getZoom();
+  if (layers.villages.on) { if (z < 9.5) map.removeLayer(lVill); else if (!map.hasLayer(lVill)) { lVill.addTo(map); layers.villages.paint(); } }
+  $$(".lbl-ts").forEach(el => { el.style.display = z < 8.5 || z > 12 ? "none" : ""; });
+}
+map.on("zoomend", zoomRules); zoomRules();
+
+/* ---------------------------------------------------------- legend */
+(function legend() {
+  const sevRow = ["fatal", "severe", "affected"].map(s => `<span class="lg-i">${glyph("flood", s, 11)}${SEV_LABEL[s]}</span>`).join("");
+  const hazRow = ["landslide", "flood", "both"].map(h => `<span class="lg-i">${glyph(h, "severe", 11).replace(/var\(--sev-severe\)/g, "var(--ink-3)")}${HAZ_LABEL[h]}</span>`).join("");
+  $("#legend").innerHTML = `
+    <button class="legend-toggle" type="button" id="lgBtn" aria-expanded="true">Legend</button>
+    <h4>Colour: what happened</h4><div class="lg-row">${sevRow}</div>
+    <h4>Shape: hazard</h4><div class="lg-row">${hazRow}</div>
+    <div class="lg-row">
+      <span class="lg-i">${glyph("flood", "affected", 11, { approx: true }).replace(/var\(--sev-affected\)/g, "var(--ink-3)")}Approximate</span>
+      <span class="lg-i"><svg width="12" height="12" aria-hidden="true"><path d="M6 1 l5 4 v6 h-10 v-6 z" style="fill:var(--accent)"/></svg>Shelter</span>
+      <span class="lg-i">${blockGlyph(11)}Road blocked</span>
+      <span class="lg-i">${hospGlyph(10)}Hospital</span>
+    </div>
+    <div class="lg-row">
+      <span class="lg-i"><span class="lg-sw" style="background:var(--lowland);opacity:.7"></span>Below 5 m</span>
+      <span class="lg-i"><span class="lg-sw" style="background:var(--mining);opacity:.7"></span>Mine site</span>
+      <span class="lg-i"><span class="lg-sw" style="background:var(--ward-flood);opacity:.7"></span>Flooded ward</span>
+    </div>`;
+  const lg = $("#legend"), b = $("#lgBtn");
+  if (matchMedia("(max-width: 600px)").matches) { lg.classList.add("collapsed"); b.setAttribute("aria-expanded", "false"); }
+  b.addEventListener("click", () => { const c = lg.classList.toggle("collapsed"); b.setAttribute("aria-expanded", String(!c)); });
+})();
+
+$("#btnCore").addEventListener("click", () => map.flyToBounds(CORE, { padding: [10, 10], duration: 0.8 }));
+$("#btnDistrict").addEventListener("click", () => map.flyToBounds(DISTRICT, { padding: [10, 10], duration: 0.8 }));
+
+/* ================================================================== PANEL */
+function tabTo(which) {
+  ["sites", "layers"].forEach(k => {
+    $(`#tab-${k}`).setAttribute("aria-selected", String(k === which));
+    $(`#pane-${k}`).hidden = k !== which;
+  });
+}
+$("#tab-sites").addEventListener("click", () => tabTo("sites"));
+$("#tab-layers").addEventListener("click", () => tabTo("layers"));
+
+const hospitals = GEO.hospitals.features.map(f => ({ name: f.properties.nmHsp_eng, lvl: f.properties.lvlHsp_eng, beds: f.properties.bedClass, lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }));
+function km(a, b) {
+  const R = 6371, t = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * t, dLon = (b.lon - a.lon) * t;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+let selected = null;
+function overview() {
+  const c = AN.cutoff;
+  return `
+    <span class="eyebrow">Overview</span>
+    <h3>47 places named in one report</h3>
+    <p class="body">Dawei Watch named ${SITES.length} villages, wards and towns hit on 26–27 Sep. ${SITES.filter(s => s.lat != null).length} are on the map, ${FLOOD.match_grades.exact} of them matched exactly to a MIMU village or town. Launglon has the dead and missing; Thayetchaung and Dawei were flooded.</p>
+    <div class="figs">
+      <div class="fig"><b>${SITES.filter(s => s.ts === "Launglon").length}</b><span>sites in Launglon</span></div>
+      <div class="fig"><b>${SITES.filter(s => s.ts === "Thayetchaung").length}</b><span>in Thayetchaung</span></div>
+      <div class="fig"><b>${SITES.filter(s => s.sev === "fatal").length}</b><span>with deaths or missing</span></div>
+    </div>
+    <p class="note">Select a marker or a row below for the full report on that place.</p>`;
+}
+function renderDetail() {
+  const el = $("#detail");
+  if (!selected) { el.innerHTML = overview(); return; }
+  const s = BY_ID[selected];
+  const figs = [];
+  if (s.dead) figs.push([s.dead, "dead"]);
+  if (s.missing) figs.push([(s.id === "ka-det-nge" ? "~" : "") + s.missing, "missing"]);
+  if (s.missing_text) figs.push([s.missing_text, "missing"]);
+  if (s.rescued) figs.push([s.rescued, "rescued alive"]);
+  if (s.houses) figs.push([(s.id === "kayin-gyi" ? "~" : "") + s.houses + (s.id === "ka-det-nge-htein" ? "+" : ""), "houses buried"]);
+  if (s.sheltering) figs.push([(s.id === "yay-phyu" ? "~" : "") + s.sheltering + (s.id === "kayin-gyi" ? "+" : ""), "sheltering"]);
+  if (s.depth_ft) figs.push([`~${s.depth_ft} ft`, "water depth"]);
+  const roles = { relief: "Relief camp or shelter", needs: "Needs aid", access: "Access affected", observe: "Observation" };
+  const near = AN.near_sites.filter(r => r.site === s.id);
+  let nearest = null;
+  if (s.lat != null) nearest = hospitals.map(h => ({ ...h, d: km(s, h) })).sort((a, b) => a.d - b.d)[0];
+  el.innerHTML = `
+    <span class="eyebrow">${esc(s.area)} · ${esc(s.ts)} Township</span>
+    <h3>${esc(s.en)}</h3>
+    <div class="mm-name mm">${esc(s.mm)}</div>
+    <div class="chips">
+      <span class="chip sev-${s.sev}"><span class="dot" style="background:var(--sev-${s.sev})"></span>${esc(SEV_LABEL[s.sev])}</span>
+      <span class="chip">${esc(HAZ_LABEL[s.hazard])}</span>
+      ${s.roles.map(r => `<span class="chip">${esc(roles[r])}</span>`).join("")}
+    </div>
+    ${figs.length ? `<div class="figs">${figs.map(([v, l]) => `<div class="fig"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</div>` : ""}
+    <p class="body">${esc(s.text)}</p>
+    ${s.dead_note ? `<p class="note">${esc(s.dead_note)}</p>` : ""}
+    ${s.quote_en ? `<div class="quote"><span class="q-en">“${esc(s.quote_en)}”</span><span class="q-mm mm">${esc(s.quote_mm)}</span><span class="q-by">${esc(s.quote_by)}</span></div>` : ""}
+    <dl class="kv">
+      <dt>Location</dt><dd>${esc(MATCH_LABEL[s.match])}${s.mimu_name ? ` · ${esc(s.mimu_name)}` : ""}${s.mimu_mm && s.mimu_mm !== s.mm ? ` <span class="mm">(${esc(s.mimu_mm)})</span>` : ""}</dd>
+      ${s.match_note ? `<dt></dt><dd>${esc(s.match_note)}</dd>` : ""}
+      ${s.vt ? `<dt>Village tract</dt><dd>${esc(s.vt)}${s.mimu_ts && s.mimu_ts !== s.ts ? ` · ${esc(s.mimu_ts)} Township (MIMU)` : ""}</dd>` : ""}
+      ${s.pcode ? `<dt>MIMU PCode</dt><dd class="num">${esc(s.pcode)}</dd>` : ""}
+      ${nearest ? `<dt>Nearest hospital</dt><dd>${esc(nearest.name)} · ${nearest.d.toFixed(1)} km straight line</dd>` : ""}
+      ${near.length ? `<dt>Within 1 km</dt><dd>${near.map(r => `${r.kind === "hospital" ? "Hospital: " : ""}<span class="${r.kind === "school" ? "mm" : ""}">${esc(r.name)}</span> (${fmt(r.dist_m)} m)`).join("; ")}</dd>` : ""}
+      <dt>Source</dt><dd>Dawei Watch, line ${esc(s.src)} of the report</dd>
+    </dl>
+    <button class="act" type="button" id="clearSel">Back to overview</button>`;
+  $("#clearSel").addEventListener("click", () => select(null));
+}
+
+const FILTERS = [
+  { k: "all", l: "All", f: () => true },
+  { k: "fatal", l: "Deaths or missing", f: s => s.sev === "fatal" },
+  { k: "landslide", l: "Landslide", f: s => s.hazard !== "flood" },
+  { k: "flood", l: "Flood", f: s => s.hazard !== "landslide" },
+  { k: "relief", l: "Shelter or needs", f: s => s.roles.includes("relief") || s.roles.includes("needs") },
+  { k: "approx", l: "Approximate / not found", f: s => s.match === "approx" || s.match === "unlocated" || s.match === "probable" },
+];
+let filterK = "all";
+$("#filters").innerHTML = FILTERS.map(f => `<button class="fbtn" type="button" data-k="${f.k}" aria-pressed="${f.k === filterK}">${esc(f.l)}</button>`).join("");
+$$("#filters .fbtn").forEach(b => b.addEventListener("click", () => {
+  filterK = b.dataset.k;
+  $$("#filters .fbtn").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderList();
+}));
+$("#q").addEventListener("input", renderList);
+
+const AREA_ORDER = ["Launglon town", "Launglon south", "Launglon north", "Launglon north-west", "Thayetchaung", "Dawei", "Dawei east", "Yebyu"];
+function renderList() {
+  const q = $("#q").value.trim().toLowerCase();
+  const f = FILTERS.find(x => x.k === filterK).f;
+  const rows = SITES.filter(f).filter(s => !q || s.en.toLowerCase().includes(q) || s.mm.includes(q) || (s.mimu_mm || "").includes(q));
+  if (!rows.length) { $("#siteList").innerHTML = `<p class="empty">No reported site matches “${esc(q)}”. The map's grey dots are every MIMU village; hover one to see its name.</p>`; return; }
+  const groups = AREA_ORDER.map(a => [a, rows.filter(s => s.area === a).sort((x, y) => SEV_ORDER[x.sev] - SEV_ORDER[y.sev])]).filter(g => g[1].length);
+  $("#siteList").innerHTML = groups.map(([a, list]) => `
+    <div class="grp"><span>${esc(a)}</span><span>${list.length}</span></div>
+    ${list.map(s => {
+      const figs = siteFigs(s);
+      const tag = s.match === "unlocated" ? "not mapped" : s.match === "approx" ? "approx." : s.match === "probable" ? "probable" : "";
+      return `<button class="row" type="button" data-id="${s.id}" aria-current="${s.id === selected}">
+        <span class="ic">${glyph(s.hazard, s.sev, 12, { approx: false })}</span>
+        <span class="nm">${esc(s.en)}<span class="mm">${esc(s.mm)}</span></span>
+        <span class="tag">${esc(tag)}</span>
+        <span class="sub">${figs.length ? esc(figs.join(" · ")) : esc(HAZ_LABEL[s.hazard])}</span>
+      </button>`;
+    }).join("")}`).join("");
+  $$("#siteList .row").forEach(b => b.addEventListener("click", () => select(b.dataset.id)));
+}
+
+function select(id, { fly = true } = {}) {
+  if (selected && siteMarkers[selected]) siteMarkers[selected]._icon?.classList.remove("sel");
+  selected = id;
+  renderDetail(); renderList();
+  tabTo("sites");
+  $("#pane-sites").scrollTop = 0;
+  if (!id) return;
+  const s = BY_ID[id];
+  const m = siteMarkers[id];
+  if (m) {
+    m._icon?.classList.add("sel");
+    if (fly) map.flyTo([s.lat, s.lon], Math.max(map.getZoom(), 12), { duration: 0.8 });
+    m.openTooltip();
+  }
+}
+map.on("zoomend moveend", () => { if (selected && siteMarkers[selected]) siteMarkers[selected]._icon?.classList.add("sel"); });
+renderDetail(); renderList();
+
+/* ================================================================== CHARTS */
+function svgEl(tag, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function niceTicks(max, n = 4) {
+  const raw = max / n, mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const out = []; for (let v = 0; v <= max + 1e-9; v += step) out.push(v);
+  if (out[out.length - 1] < max) out.push(out[out.length - 1] + step);
+  return out;
+}
+function tipFor(container) {
+  let t = container.querySelector(".tip");
+  if (!t) { t = document.createElement("div"); t.className = "tip"; t.setAttribute("role", "status"); container.appendChild(t); }
+  return {
+    show(html, x, y) {
+      t.innerHTML = html; t.classList.add("on");
+      const cw = container.clientWidth, tw = t.offsetWidth, th = t.offsetHeight;
+      let left = x + 14; if (left + tw > cw) left = x - tw - 14; if (left < 0) left = 0;
+      let top = y - th - 10; if (top < 0) top = y + 14;
+      t.style.left = left + "px"; t.style.top = top + "px";
+    },
+    hide() { t.classList.remove("on"); },
+  };
+}
+const barPath = (x, y, w, h, r = 4) => {
+  r = Math.min(r, h, w / 2);
+  return `M${x} ${y + h} V${y + r} Q${x} ${y} ${x + r} ${y} H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r} V${y + h} Z`;
+};
+const hbarPath = (x, y, w, h, r = 4) => {
+  r = Math.min(r, w, h / 2);
+  return `M${x} ${y} H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r} V${y + h - r} Q${x + w} ${y + h} ${x + w - r} ${y + h} H${x} Z`;
+};
+const charts = [];
+function chart(el, draw) {
+  const c = { el, draw };
+  charts.push(c);
+  const run = () => { el.querySelectorAll("svg").forEach(s => s.remove()); draw(el, el.clientWidth); };
+  c.run = run;
+  new ResizeObserver(() => run()).observe(el);
+  run();
+}
+onTheme.push(() => charts.forEach(c => c.run()));
+
+const fetchedLocal = (() => {
+  const d = new Date(RAIN.fetched_utc.replace("Z", ":00Z"));
+  return new Date(d.getTime() + 6.5 * 3600e3); // Myanmar time, as a naive clock
+})();
+const P = RAIN.points;
+const TOWNS = [["Dawei", "--s1"], ["Launglon", "--s2"], ["Thayetchaung", "--s3"]];
+
+/* -------- daily rain, Dawei, September */
+(function rainDaily() {
+  const d = P.Dawei.daily;
+  const days = Object.keys(d).sort();
+  const vals = days.map(k => d[k]);
+  const others = days.filter(k => k < "2026-09-26").map(k => d[k]);
+  const avg = others.reduce((a, b) => a + b, 0) / others.length;
+  const fetchDay = fetchedLocal.toISOString().slice(0, 10);   // partly observed, partly forecast
+  $("#rainLede").innerHTML = `DMH measured <b>${F.record_mm} mm (${F.record_in} in)</b> at Dawei in the reading for 27 Sep, beating the old record of ${F.prev_record_in} in (${Math.round(F.prev_record_in * 25.4)} mm). The weather model puts ${d["2026-09-26"].toFixed(0)} mm on 26 Sep alone, about ${Math.round(d["2026-09-26"] / avg)} times the ${avg.toFixed(0)} mm daily average for 1–25 Sep.`;
+  $("#rainLegend").innerHTML = `<span><i class="sq" style="background:var(--rain)"></i>Model rain, Dawei</span><span><i class="sq" style="background:var(--rain-peak)"></i>26–27 Sep</span><span><i class="sq" style="background:var(--rain-fcst)"></i>Forecast</span><span><i class="dash"></i>DMH gauge records</span>`;
+  const el = $("#chRain"), tip = tipFor(el);
+  chart(el, (el, W) => {
+    const H = 250, m = { t: 16, r: 12, b: 26, l: 36 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const ticks = niceTicks(Math.max(300, ...vals));
+    const ymax = ticks[ticks.length - 1];
+    const y = v => m.t + ih - (v / ymax) * ih;
+    const band = iw / days.length, bw = Math.min(24, band * 0.7);
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Daily model rainfall at Dawei, 1 to 29 September" });
+    ticks.forEach(t => { svgEl("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t ? "tick-line" : "base" }, svg); const tx = svgEl("text", { x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, svg); tx.textContent = t; });
+    const unit = svgEl("text", { x: m.l - 6, y: m.t - 5, "text-anchor": "end" }, svg); unit.textContent = "mm";
+    days.forEach((k, i) => {
+      const v = vals[i], x = m.l + i * band + (band - bw) / 2;
+      const col = k > fetchDay ? "var(--rain-fcst)" : (k === "2026-09-26" || k === "2026-09-27") ? "var(--rain-peak)" : "var(--rain)";
+      if (v > 0) svgEl("path", { d: barPath(x, y(v), bw, y(0) - y(v), Math.min(4, bw / 2)), style: `fill:${col}` }, svg);
+      const dn = +k.slice(8);
+      if (dn === 1 || dn % 5 === 0 || dn === 26 || dn === 27) {
+        if (!(dn === 25 && band < 16)) { const tx = svgEl("text", { x: m.l + i * band + band / 2, y: H - 8, "text-anchor": "middle", class: dn === 26 || dn === 27 ? "lbl-strong" : "" }, svg); tx.textContent = dn; }
+      }
+      const hit = svgEl("rect", { x: m.l + i * band, y: m.t, width: band, height: ih, fill: "transparent" }, svg);
+      hit.addEventListener("pointermove", ev => {
+        const r = el.getBoundingClientRect();
+        tip.show(`<b>${dn} Sep</b>${k > fetchDay ? " · forecast" : k === fetchDay ? " · partly forecast" : ""}<div class="r"><span>Model rain, Dawei</span><b class="num">${v.toFixed(1)} mm</b></div>`, ev.clientX - r.left, ev.clientY - r.top);
+      });
+      hit.addEventListener("pointerleave", () => tip.hide());
+    });
+    [[F.record_mm, `DMH record ${F.record_mm} mm (27 Sep reading)`], [Math.round(F.prev_record_in * 25.4), `Previous record ${Math.round(F.prev_record_in * 25.4)} mm`]].forEach(([v, l], i) => {
+      svgEl("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), style: "stroke:var(--ink-2);stroke-width:1.2;stroke-dasharray:4 3" }, svg);
+      const tx = svgEl("text", { x: m.l + 6, y: y(v) + (i ? 13 : -5), class: "lbl-ink" }, svg); tx.textContent = l;
+    });
+    const i26 = days.indexOf("2026-09-26");
+    const lx = svgEl("text", { x: m.l + i26 * band + band / 2 - bw / 2 - 5, y: y(vals[i26]) + 12, "text-anchor": "end", class: "lbl-strong" }, svg);
+    lx.textContent = `${vals[i26].toFixed(0)} mm`;
+    el.prepend(svg);
+  });
+  const three = ["2026-09-26", "2026-09-27", "2026-09-28"].reduce((a, k) => a + d[k], 0);
+  $("#rainNote").textContent = `Bars: Open-Meteo best-match weather model for the grid cell over Dawei, fetched ${RAIN.fetched_utc.replace("T", " ").replace("Z", " UTC")}. They are model estimates, not gauge readings. ${+fetchDay.slice(8)} Sep was still in progress and later days are forecast. Dashed lines: DMH gauge records quoted by Dawei Watch. DMH daily totals run to the morning reading, so the 27 Sep record mostly covers rain that fell on 26 Sep. For 26–28 Sep the model gives ${three.toFixed(0)} mm; the forecast quoted in the report was ${F.forecast_3day_mm[0]}–${F.forecast_3day_mm[1]} mm (${F.forecast_by}).`;
+})();
+
+/* -------- cumulative storm, 25-28 Sep */
+(function storm() {
+  const hrs = Object.keys(P.Dawei.hourly).sort();
+  const series = TOWNS.map(([n, c]) => {
+    let acc = 0;
+    return { n, c, pts: hrs.map(h => { const v = P[n].hourly[h] || 0; acc += v; return { h, v, acc }; }) };
+  });
+  const t0 = new Date(hrs[0] + ":00Z").getTime();
+  const hourIx = iso => (new Date(iso + ":00Z").getTime() - t0) / 3600e3;
+  const nowIx = hourIx(fetchedLocal.toISOString().slice(0, 16));
+  const events = FLOOD.timeline.map((e, i) => ({ ...e, n: i + 1, ix: hourIx(e.t) })).filter(e => e.ix >= 0 && e.ix <= hrs.length - 1);
+  $("#stormLegend").innerHTML = TOWNS.map(([n, c]) => `<span><i style="background:var(${c})"></i>${n}</span>`).join("") + `<span><i class="sq" style="background:var(--surface-sunk)"></i>Forecast hours</span>`;
+  const el = $("#chStorm"), tip = tipFor(el);
+  chart(el, (el, W) => {
+    const H = 270, m = { t: 14, r: W < 480 ? 16 : 92, b: 58, l: 36 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const ymaxRaw = Math.max(...series.map(s => s.pts[s.pts.length - 1].acc));
+    const ticks = niceTicks(ymaxRaw); const ymax = ticks[ticks.length - 1];
+    const x = i => m.l + (i / (hrs.length - 1)) * iw;
+    const y = v => m.t + ih - (v / ymax) * ih;
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Cumulative model rainfall at Dawei, Launglon and Thayetchaung, 25 to 28 September" });
+    if (nowIx < hrs.length - 1) svgEl("rect", { x: x(Math.max(0, nowIx)), y: m.t, width: x(hrs.length - 1) - x(Math.max(0, nowIx)), height: ih, style: "fill:var(--surface-sunk)" }, svg);
+    ticks.forEach(t => { svgEl("line", { x1: m.l, x2: m.l + iw, y1: y(t), y2: y(t), class: t ? "tick-line" : "base" }, svg); const tx = svgEl("text", { x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, svg); tx.textContent = t; });
+    const unit = svgEl("text", { x: m.l - 6, y: m.t - 3, "text-anchor": "end" }, svg); unit.textContent = "mm";
+    for (let d = 0; d < 4; d++) {
+      const i = d * 24;
+      if (d) svgEl("line", { x1: x(i), x2: x(i), y1: m.t, y2: m.t + ih, class: "tick-line" }, svg);
+      const tx = svgEl("text", { x: x(i + 12), y: m.t + ih + 16, "text-anchor": "middle", class: d === 1 || d === 2 ? "lbl-strong" : "" }, svg); tx.textContent = `${25 + d} Sep`;
+    }
+    series.forEach(s => {
+      const d = s.pts.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(p.acc).toFixed(1)}`).join(" ");
+      svgEl("path", { d, style: `fill:none;stroke:var(${s.c});stroke-width:2;stroke-linejoin:round;stroke-linecap:round` }, svg);
+    });
+    // end labels with leader lines, spread apart
+    const ends = series.map(s => ({ s, v: s.pts[s.pts.length - 1].acc, yy: y(s.pts[s.pts.length - 1].acc) })).sort((a, b) => a.yy - b.yy);
+    for (let i = 1; i < ends.length; i++) if (ends[i].yy - ends[i - 1].yy < 14) ends[i].yy = ends[i - 1].yy + 14;
+    ends.forEach(e => {
+      svgEl("circle", { cx: x(hrs.length - 1), cy: y(e.v), r: 4, style: `fill:var(${e.s.c});stroke:var(--surface);stroke-width:2` }, svg);
+      if (m.r > 40) {
+        svgEl("line", { x1: x(hrs.length - 1) + 6, x2: x(hrs.length - 1) + 12, y1: y(e.v), y2: e.yy, style: "stroke:var(--axis)" }, svg);
+        const tx = svgEl("text", { x: x(hrs.length - 1) + 15, y: e.yy + 4, class: "lbl-ink" }, svg);
+        tx.textContent = `${e.s.n} ${Math.round(e.v)}`;
+      }
+    });
+    // event markers
+    const ey = m.t + ih + 36;
+    svgEl("line", { x1: m.l, x2: m.l + iw, y1: ey, y2: ey, class: "tick-line" }, svg);
+    const et = svgEl("text", { x: m.l - 6, y: ey + 4, "text-anchor": "end" }, svg); et.textContent = "Events";
+    const placed = [];
+    events.forEach(e => {
+      let ex = x(e.ix);
+      while (placed.some(p => Math.abs(p - ex) < 15)) ex += 15;
+      placed.push(ex);
+      const g = svgEl("g", { tabindex: 0, role: "button", "aria-label": `Event ${e.n}: ${e.en}` }, svg);
+      svgEl("circle", { cx: ex, cy: ey, r: 7.5, style: `fill:var(--surface);stroke:var(--ink-2);stroke-width:1.3` }, g);
+      const tx = svgEl("text", { x: ex, y: ey + 3.5, "text-anchor": "middle", style: "font-size:9.5px;fill:var(--ink);font-family:var(--mono)" }, g); tx.textContent = e.n;
+      const showE = ev => { const r = el.getBoundingClientRect(); const bx = ev.clientX ? ev.clientX - r.left : ex; const by = ev.clientY ? ev.clientY - r.top : ey; tip.show(`<b>${e.n}. ${esc(e.when)}</b><br>${esc(e.en)}`, bx, by); };
+      g.addEventListener("pointermove", showE); g.addEventListener("focus", showE);
+      g.addEventListener("pointerleave", () => tip.hide()); g.addEventListener("blur", () => tip.hide());
+    });
+    // crosshair
+    const cross = svgEl("line", { y1: m.t, y2: m.t + ih, style: "stroke:var(--ink-3);stroke-width:1;opacity:0" }, svg);
+    const dots = series.map(s => svgEl("circle", { r: 4, style: `fill:var(${s.c});stroke:var(--surface);stroke-width:2;opacity:0` }, svg));
+    const hit = svgEl("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent" }, svg);
+    hit.addEventListener("pointermove", ev => {
+      const r = el.getBoundingClientRect(), sx = (ev.clientX - r.left) * (W / r.width);
+      const i = Math.max(0, Math.min(hrs.length - 1, Math.round(((sx - m.l) / iw) * (hrs.length - 1))));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.style.opacity = 1;
+      series.forEach((s, k) => { dots[k].setAttribute("cx", x(i)); dots[k].setAttribute("cy", y(s.pts[i].acc)); dots[k].style.opacity = 1; });
+      const h = hrs[i], dd = +h.slice(8, 10), hh = +h.slice(11, 13);
+      const lab = `${dd} Sep, ${hh === 0 ? "12 am" : hh < 12 ? hh + " am" : hh === 12 ? "12 pm" : hh - 12 + " pm"}${i >= nowIx ? " · forecast" : ""}`;
+      tip.show(`<b>${lab}</b>` + series.map(s => `<div class="r"><span><i style="background:var(${s.c})"></i> ${s.n}</span><span class="num">${s.pts[i].acc.toFixed(0)} mm <span class="muted">(+${s.pts[i].v.toFixed(1)})</span></span></div>`).join(""), ev.clientX - r.left, ev.clientY - r.top);
+    });
+    hit.addEventListener("pointerleave", () => { tip.hide(); cross.style.opacity = 0; dots.forEach(d => d.style.opacity = 0); });
+    el.prepend(svg);
+  });
+  $("#stormNote").textContent = `Open-Meteo best-match model, hourly, Myanmar time. Running totals from 00:00 on 25 Sep; the bracketed figure in the tooltip is that hour's rain. Shaded hours were still forecast when the data was fetched. Model grid cells are several kilometres wide and smooth out local downpours.`;
+})();
+
+/* -------- ledger */
+(function ledger() {
+  const ids = ["ka-det-nge", "ka-det-nge-htein", "kyauk-ni-maw", "min-yat", "nyaw-pyin", "kayin-gyi", "yay-phyu", "tha-byar", "kin-shey"];
+  const rows = ids.map(id => BY_ID[id]);
+  const cols = [
+    { k: "dead", l: "Dead", c: "var(--sev-fatal)", v: s => s.dead, t: s => s.id === "nyaw-pyin" ? "reported, unconfirmed" : null },
+    { k: "missing", l: "Missing", c: "var(--sev-severe)", v: s => s.missing, t: s => s.missing_text || null, pre: s => s.id === "ka-det-nge" ? "~" : "" },
+    { k: "houses", l: "Houses buried", c: "var(--mining)", v: s => s.houses, pre: s => s.id === "kayin-gyi" ? "~" : "", post: s => s.id === "ka-det-nge-htein" ? "+" : "" },
+    { k: "sheltering", l: "People sheltering", c: "var(--accent)", v: s => s.sheltering, pre: s => s.id === "yay-phyu" ? "~" : "", post: s => s.id === "kayin-gyi" ? "+" : "" },
+  ];
+  cols.forEach(c => { c.max = Math.max(1, ...rows.map(s => c.v(s) || 0)); });
+  const cell = (c, s) => {
+    const v = c.v(s);
+    if (v) return `<div class="bar-cell"><div class="trk"><div class="fill" style="width:${(v / c.max) * 100}%;background:${c.c}"></div></div><span class="v">${(c.pre ? c.pre(s) : "") + v + (c.post ? c.post(s) : "")}</span></div>`;
+    const t = c.t && c.t(s);
+    if (t) return `<div class="bar-cell"><div class="trk"></div><span class="v txt">${esc(t)}</span></div>`;
+    return `<span class="dash-v">–</span>`;
+  };
+  $("#ledger").innerHTML = `
+    <thead><tr><th>Village</th>${cols.map(c => `<th>${esc(c.l)}</th>`).join("")}<th>What happened</th></tr></thead>
+    <tbody>${rows.map(s => `<tr class="clickable" data-id="${s.id}" tabindex="0">
+      <td class="site"><b>${esc(s.en)}</b><span class="mm">${esc(s.mm)}</span></td>
+      ${cols.map(c => `<td>${cell(c, s)}</td>`).join("")}
+      <td style="min-width:220px;color:var(--ink-2);font-size:12.5px">${esc(s.text.split(". ").slice(0, 1).join(". ").replace(/\.$/, ""))}.</td>
+    </tr>`).join("")}</tbody>`;
+  $$("#ledger tr.clickable").forEach(tr => {
+    const go = () => { select(tr.dataset.id); document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    tr.addEventListener("click", go);
+    tr.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+  $("#ledgerNote").textContent = "“Dozens missing” at Kadet Nge Htein and “about 10 missing” at Kadet Nge are neighbouring villages and may partly describe the same people. The three bodies recovered in Launglon Township are the two at Kadet Nge and the mother at Min Yat. Water in Kin Shey stood over a person's height (about 6 ft, the depth reported for Thayetchaung Township).";
+})();
+
+/* -------- cut-off */
+(function cutoff() {
+  const c = AN.cutoff;
+  $("#cutLede").textContent = `In MIMU's road network a single road leads from Launglon town into the south of the township. At about 2:30 pm on 27 Sep a landslide on Poe Zar Pin hill, between the town and Nyin Maw, stopped the rescue convoy on it. Counting what MIMU records on the peninsula south of that point:`;
+  const stats = [
+    [c.villages, `of Launglon's ${c.launglon_villages} MIMU villages`],
+    [c.reported_sites, `reported sites, ${c.fatal} with deaths or missing`],
+    [c.schools, "schools (MIMU 2019)"],
+    [c.hospitals, `hospital: ${c.hospital_names.join(", ")}`],
+    [c.village_tracts, "village tracts"],
+    [fmt(c.area_km2), "km² of mainland"],
+  ];
+  $("#cutStats").innerHTML = stats.map(([v, l]) => `<div class="cut-stat"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("");
+  $("#cutNote").textContent = "Straight-line analysis on MIMU layers: everything on the Launglon mainland south of the slide's latitude. The slide's position is approximate: midway between Launglon town and Nyin Maw, moved onto the road. Boats and minor village tracks are not modelled, and villages could still be reached from the sea.";
+  $("#btnCut").addEventListener("click", () => {
+    const on = !layers.cutoff.on;
+    toggleLayer("cutoff", on);
+    if (on) { map.flyToBounds(lCut.getBounds(), { padding: [20, 20], duration: 0.8 }); document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" }); }
+  });
+})();
+
+/* -------- facilities near sites */
+(function near() {
+  const rows = AN.near_sites;
+  const nS = rows.filter(r => r.kind === "school").length, nH = rows.filter(r => r.kind === "hospital").length;
+  $("#nearLede").textContent = `${nS} of the district's ${AN.district.schools} mapped schools and ${nH} of its ${AN.district.hospitals} hospitals lie within ${fmt(AN.near_m)} m of a place named in the report. Schools are often used as shelters, as at Yay Phyu. Each facility counts once, against its nearest site.`;
+  const agg = {};
+  rows.forEach(r => { const a = agg[r.site] ||= { site: r.site, en: r.site_en, sev: r.sev, school: 0, hospital: 0 }; a[r.kind]++; });
+  const list = Object.values(agg).sort((a, b) => (b.school + b.hospital) - (a.school + a.hospital) || SEV_ORDER[a.sev] - SEV_ORDER[b.sev]).slice(0, 10);
+  $("#nearLegend").innerHTML = `<span><i class="sq" style="background:var(--school)"></i>Schools</span><span><i class="sq" style="background:var(--hospital)"></i>Hospitals</span>`;
+  const el = $("#chNear"), tip = tipFor(el);
+  chart(el, (el, W) => {
+    const rh = 24, m = { t: 4, r: 30, b: 4, l: Math.min(150, W * 0.38) };
+    const H = m.t + m.b + list.length * rh;
+    const iw = W - m.l - m.r;
+    const max = Math.max(...list.map(a => a.school + a.hospital));
+    const sx = v => (v / max) * iw;
+    const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Schools and hospitals within 1 km, by reported site" });
+    list.forEach((a, i) => {
+      const y0 = m.t + i * rh, bh = 13, by = y0 + (rh - bh) / 2;
+      const g = svgEl("g", { style: "cursor:pointer" }, svg);
+      const nm = svgEl("text", { x: m.l - 26, y: y0 + rh / 2 + 4, "text-anchor": "end", class: "lbl-ink" }, g); nm.textContent = a.en;
+      svgEl("path", { d: glyphPathFor(m.l - 14, y0 + rh / 2, a.sev), style: `fill:var(--sev-${a.sev})` }, g);
+      let x = m.l;
+      if (a.school) { svgEl("path", { d: a.hospital ? `M${x} ${by} h${sx(a.school) - 2} v${bh} h-${sx(a.school) - 2} Z` : hbarPath(x, by, sx(a.school), bh), style: "fill:var(--school)" }, g); x += sx(a.school); }
+      if (a.hospital) svgEl("path", { d: hbarPath(x, by, sx(a.hospital), bh), style: "fill:var(--hospital)" }, g);
+      const v = svgEl("text", { x: m.l + sx(a.school + a.hospital) + 6, y: y0 + rh / 2 + 4, class: "lbl-ink num" }, g); v.textContent = a.school + a.hospital;
+      const hit = svgEl("rect", { x: 0, y: y0, width: W, height: rh, fill: "transparent" }, g);
+      hit.addEventListener("pointermove", ev => {
+        const r = el.getBoundingClientRect();
+        const names = rows.filter(r2 => r2.site === a.site);
+        tip.show(`<b>${esc(a.en)}</b><div class="r"><span><i style="background:var(--school)"></i> Schools</span><b class="num">${a.school}</b></div><div class="r"><span><i style="background:var(--hospital)"></i> Hospitals</span><b class="num">${a.hospital}</b></div><span class="tt-k">${names.slice(0, 4).map(n => `<span class="${n.kind === "school" ? "mm" : ""}">${esc(n.name)}</span> ${fmt(n.dist_m)} m`).join("<br>")}${names.length > 4 ? "<br>…" : ""}</span>`, ev.clientX - r.left, ev.clientY - r.top);
+      });
+      hit.addEventListener("pointerleave", () => tip.hide());
+      hit.addEventListener("click", () => { select(a.site); document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" }); });
+    });
+    el.prepend(svg);
+  });
+  const hs = rows.filter(r => r.kind === "hospital");
+  $("#nearNote").textContent = `Top 10 sites shown. Hospitals within ${fmt(AN.near_m)} m: ${hs.map(h => `${h.name} (${fmt(h.dist_m)} m from ${h.site_en})`).join("; ")}. Distances are straight-line, from MIMU village points, so they describe proximity, not damage.`;
+})();
+function glyphPathFor(cx, cy, sev) { const r = 4; return `M${cx} ${cy - r} a${r} ${r} 0 1 0 0.01 0 Z`; }
+
+/* -------- township table */
+(function tsTable() {
+  const order = ["Launglon", "Thayetchaung", "Dawei", "Yebyu"];
+  const say = {
+    Launglon: ["fatal", "Town and 20+ villages hit by floods and landslides; dead and missing; rescue blocked"],
+    Thayetchaung: ["severe", "Town wards and dozens of villages flooded ~6 ft; deaths reported, unconfirmed"],
+    Dawei: ["severe", "Record rain; wards and Dawei–Htee Khee road flooded; trees down"],
+    Yebyu: ["affected", "Water over the road in places; nothing else unusual"],
+  };
+  const rain = n => P[n] ? P[n].daily["2026-09-26"] + P[n].daily["2026-09-27"] : null;
+  const T = AN.townships;
+  const maxLow = Math.max(...order.map(n => T[n].lowland_pct));
+  const maxMine = Math.max(...order.map(n => T[n].mining_ha));
+  const maxRain = Math.max(...order.map(n => rain(n) || 0));
+  const bar = (v, max, col, txt) => `<div class="bar-cell"><div class="trk"><div class="fill" style="width:${(v / max) * 100}%;background:${col}"></div></div><span class="v">${txt}</span></div>`;
+  $("#tsTable").innerHTML = `
+    <thead><tr><th>Township</th><th>Dawei Watch reports</th><th class="r">Reported sites</th><th class="r">MIMU villages</th><th class="r">Village tracts with a report</th><th class="r">Schools</th><th class="r">Hospitals (beds)</th><th>Land below 5 m</th><th>Mapped mining</th><th>Model rain, 26–27 Sep</th></tr></thead>
+    <tbody>${order.map(n => { const t = T[n], [sev, txt] = say[n], r = rain(n); return `<tr>
+      <td class="site"><b>${esc(n)}</b><span class="mm">${esc(t.ts_mm)}</span></td>
+      <td style="min-width:220px"><span class="chip sev-${sev}" style="margin-bottom:4px"><span class="dot" style="background:var(--sev-${sev})"></span>${esc(SEV_LABEL[sev])}</span><div style="font-size:12.5px;color:var(--ink-2)">${esc(txt)}</div></td>
+      <td class="r num">${t.reported_sites}</td>
+      <td class="r num">${t.villages}</td>
+      <td class="r num">${t.vt_hit} <span class="muted">/ ${t.village_tracts}</span></td>
+      <td class="r num">${t.schools}</td>
+      <td class="r num">${t.hospitals} <span class="muted">(${t.hospital_beds})</span></td>
+      <td>${bar(t.lowland_pct, maxLow, "var(--lowland)", t.lowland_pct.toFixed(1) + "%")}</td>
+      <td>${bar(t.mining_ha, maxMine, "var(--mining)", fmt(t.mining_ha) + " ha")}</td>
+      <td>${r == null ? `<span class="dash-v">–</span>` : bar(r, maxRain, "var(--rain)", Math.round(r) + " mm")}</td>
+    </tr>`; }).join("")}</tbody>`;
+})();
+
+/* -------- timeline */
+(function timeline() {
+  $("#timeline").innerHTML = FLOOD.timeline.map((e, i) => {
+    const target = e.site && (BY_ID[e.site] || INC[e.site]);
+    return `<li><span class="n k-${e.kind || "rain"}" aria-hidden="true">${i + 1}</span>
+      <span class="when">${esc(e.when)}<span>${esc(e.area)}</span></span>
+      <span class="what">${esc(e.en)}${target ? `<button type="button" data-go="${e.site}">Map</button>` : ""}</span></li>`;
+  }).join("");
+  $$("#timeline [data-go]").forEach(b => b.addEventListener("click", () => {
+    const id = b.dataset.go;
+    document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (BY_ID[id]) select(id);
+    else { const i = INC[id]; map.flyTo([i.lat, i.lon], 13, { duration: 0.8 }); }
+  }));
+})();
+
+/* -------- voices */
+(function voices() {
+  $("#voices").innerHTML = SITES.filter(s => s.quote_en).map(s => `
+    <figure class="voice" style="margin:0">
+      <blockquote class="v-en" style="margin:0">“${esc(s.quote_en)}”</blockquote>
+      <span class="v-mm mm">${esc(s.quote_mm)}</span>
+      <figcaption class="v-by">${esc(s.quote_by)} · <button type="button" data-go="${s.id}" style="background:none;border:0;padding:0;color:var(--accent);font-size:12px;font-weight:600">Map</button></figcaption>
+    </figure>`).join("") + `
+    <figure class="voice" style="margin:0">
+      <blockquote class="v-en" style="margin:0">“So many are dead. We've only been able to bring out two bodies.”</blockquote>
+      <span class="v-mm mm">သေတဲ့သူတွေ မနည်းဘူး။ နှစ်လောင်းပဲ ထုတ်လို့ရသေးတယ်</span>
+      <figcaption class="v-by">Kadet Nge resident, midday 27 Sep · <button type="button" data-go="ka-det-nge" style="background:none;border:0;padding:0;color:var(--accent);font-size:12px;font-weight:600">Map</button></figcaption>
+    </figure>`;
+  $$("#voices [data-go]").forEach(b => b.addEventListener("click", () => { document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" }); select(b.dataset.go); }));
+})();
+
+/* -------- method */
+(function method() {
+  const g = FLOOD.match_grades;
+  const gradeRows = [
+    ["exact", "Name as written, in that township"],
+    ["variant", "Spelling or township differs in MIMU"],
+    ["probable", "Best candidate, not certain"],
+    ["approx", "Not in MIMU; placed at a stated reference"],
+    ["unlocated", "Not in MIMU; listed, not mapped"],
+  ];
+  const un = SITES.filter(s => s.match !== "exact");
+  $("#method").innerHTML = `
+    <div>
+      <h3>From report to map</h3>
+      <p>Every place in the Dawei Watch post of 27 Sep was matched by its Myanmar-script name to the MIMU village-point dataset (PCode v9.7), within the township the report names. Towns use MIMU town points and the Thayetchaung wards use MIMU ward boundaries (v9.4). Each site carries the line number of the report it comes from.</p>
+      <div style="margin-top:10px">${gradeRows.map(([k, d]) => `<div class="grade"><b>${k}</b><span class="c">${g[k] || 0}</span><span class="d">${d}</span></div>`).join("")}</div>
+    </div>
+    <div>
+      <h3>Places not matched exactly</h3>
+      <ul>${un.map(s => `<li><b>${esc(s.en)}</b> <span class="mm">${esc(s.mm)}</span>: ${esc(s.match_note || "")}</li>`).join("")}
+      <li><b>Shin Maw</b> <span class="mm">ရှင်မော်</span>: used by the report only as the southern end of the affected stretch; not in MIMU village points, not mapped.</li></ul>
+    </div>
+    <div>
+      <h3>Limits</h3>
+      <ul>
+        <li>All figures are as Dawei Watch reported them on 27 Sep, while landslides were still happening and some villages had lost contact. They are unverified and will change.</li>
+        <li>The 18,000 affected in Thayetchaung is a military government figure, quoted by the report.</li>
+        <li>The report does not map flood extent. Markers show where a place was named, not how far the water reached.</li>
+        <li>Rain bars and curves come from the Open-Meteo weather model, not gauges; only the 280 mm record is a DMH gauge figure.</li>
+        <li>MIMU layers: boundaries v9.4 (1:250k), village points v9.7, health facilities 2020 (hospitals only; no rural health centres), formal schools 2019, roads 1:250k, mining areas from 2004–16 imagery, land below 5 m. Some are several years old.</li>
+      </ul>
+      <p style="margin-top:8px">Built with Leaflet. Data pipeline: MIMU GeoNode WFS → geocoding and spatial analysis in Python (GeoPandas).</p>
+    </div>`;
+})();
+
+})();
+</script>

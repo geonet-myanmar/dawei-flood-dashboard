@@ -1,0 +1,4 @@
+# Only scripts 03 and 04 need third-party packages; 01, 02 and 05 use the standard library.
+geopandas>=1.0
+shapely>=2.0
+pandas>=2.0
